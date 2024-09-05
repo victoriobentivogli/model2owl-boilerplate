@@ -33,6 +33,117 @@ implementation
 ## Adding model2owl config
 * Copy model2owl-config folder into UML model implementation folder created at the previous step
 * Configure model2owl using the files inside model2owl-config folder
+### Configuration Files
+
+As presented above, this validator will use a maximum of three configuration files, depending on the UML model validation option you have selected (check the **Validator Options** section).
+
+#### Config Parameters File (config-parameters.xsl)
+
+This is an XSLT file that contains a set of variables used by the system during model validation. Some variables can be modified, while others should remain unchanged as they are preconfigured. A boilerplate for the config parameters can be found [here](#). The boilerplate includes comments to guide what can and cannot be changed.
+
+**Sample:**
+
+```xml
+<!-- Types of elements and names for attribute types that are acceptable to produce object properties -->
+<xsl:variable name="acceptableTypesForObjectProperties" select="('epo:Identifier', 'rdfs:Literal')"/>
+
+<!-- Acceptable stereotypes -->
+<xsl:variable name="stereotypeValidOnAttributes" select="()"/>
+<!-- ... other variables ... -->
+
+<!-- Allowed characters for a normalized string (characters allowed in a QName) -->
+<xsl:variable name="allowedStrings" select="'^[\w\d-_:]+$'"/>
+```
+There are three types of data you can pass into the variables: lists, strings, or booleans.  
+- For **lists**, the variable value should be enclosed in double quotes (`""`), with individual values wrapped in single quotes (`''`) and separated by commas.  
+- For **strings** and **booleans**, the value should always be enclosed in double quotes (`""`).
+
+**Example:**
+```xml
+String variable 
+<xsl:variable name="my-variable" select="'my string value'"/>
+List variable
+<xsl:variable name="stereotypeValidOnDependencies" select="('Disjoint', 'disjoint', 'join')"/>
+Boolean variable
+<xsl:variable name="enableGenerationOfSkosConcept" select="fn:false()"/>
+```
+**Notes:**
+- **Do not delete variables**: Each variable serves a purpose in the generation process.
+- **Maintain variable types**: Do not change the type of a variable (e.g., from a list to a string). If a variable is originally set as a list, it must remain a list.
+- If a variable is unnecessary or if you prefer not to impose restrictions, leave the variable with an empty list or string. See the examples below:
+  - **Empty string variable**:
+  
+    ```xml
+    <xsl:variable name="my-variable" select="''"/>
+    ```
+
+  - **Empty list variable**:
+
+    ```xml
+    <xsl:variable name="stereotypeValidOnAttributes" select="()"/>
+    ```
+    
+####Namespaces File (namespaces.xml)
+
+This file holds the namespace values and names used in the model being processed.
+Sample:
+
+```xml
+
+<?xml version="1.0" encoding="UTF-8"?>
+<prefixes xmlns="http://publications.europa.eu/ns/">
+   <prefix name="" value="http://data.europa.eu/a4g/ontology#"/>
+    <prefix name="foaf" value="http://xmlns.com/foaf/0.1/" importURI="http://xmlns.com/foaf/0.1/"/>
+   <!-- ... other prefixes ... -->
+</prefixes>
+```
+**Notes:**
+- If you want any URI from this list to be imported as statements (`owl:imports`) in the generated OWL and SHACL artefacts
+use the `importURI` attribute like in the example above.
+
+#### XSD and RDF Datatypes File (xsdAndRdfDataTypes.xml)
+
+This file contains declarations of XSD and RDF datatypes. 
+
+**Sample:**
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<datatypes xmlns="http://publications.europa.eu/ns/">
+   <datatype namespace="xsd" qname="xsd:anyURI"/>
+   <datatype namespace="xsd" qname="xsd:base64Binary"/>
+   <datatype namespace="xsd" qname="xsd:boolean"/>
+   <datatype namespace="xsd" qname="xsd:byte"/>
+   <datatype namespace="xsd" qname="xsd:date"/>
+   <datatype namespace="xsd" qname="xsd:dateTime"/>
+   <datatype namespace="rdfs" qname="rdfs:Literal"/>
+</datatypes>
+```
+#### UML to XSD DataTypes File (umlToXsdDataTypes.xml)
+
+This file defines the mappings between UML datatypes and XSD datatypes.
+If this in not necessary leave the default file.
+### Sample:
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<mappings xmlns="http://publications.europa.eu/ns/">
+
+    <!-- epo prefixed datatypes -->
+    <mapping>
+        <from qname="epo:Indicator"/>
+        <to qname="xsd:boolean"/>
+    </mapping>
+    <mapping>
+        <from qname="epo:Date"/>
+        <to qname="xsd:date"/>
+    </mapping>
+    <mapping>
+        <from qname="epo:DateTime"/>
+        <to qname="xsd:dateTime"/>
+    </mapping>
+</mappings>
+```
 ## Adjust GitHub actions
 In the folder .GitHub from this repository there is one action script that will transform the UML model/models.
 ### Transform with model2owl
