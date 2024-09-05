@@ -83,7 +83,7 @@ Boolean variable
     <xsl:variable name="stereotypeValidOnAttributes" select="()"/>
     ```
     
-####Namespaces File (namespaces.xml)
+#### Namespaces File (namespaces.xml)
 
 This file holds the namespace values and names used in the model being processed.
 Sample:
