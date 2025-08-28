@@ -73,7 +73,7 @@ jobs:
         echo "$RESPONSE"
         
         if echo "$RESPONSE" | jq . >/dev/null 2>&1; then
-          DATASET_ID=$(echo $RESPONSE | jq -r '.dataset_id')
+          DATASET_ID=$(echo "$RESPONSE" | jq -r '.uid')
           echo "✅ Dataset ID: $DATASET_ID"
         else
           echo "❌ Create diff failed or returned non-JSON:"
