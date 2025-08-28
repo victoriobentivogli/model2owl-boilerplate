@@ -125,34 +125,41 @@ jobs:
         echo "📥 Report request response:"
         echo "$REPORT_RESPONSE" | jq .
         
-        
-        echo "🚀 Step 4: Request report (AP report type)"
-        REPORT_TYPE=AP
-        REPORT_RESPONSE=$(curl -s -X POST \
-          -H "Content-Type: application/json" \
-          -d "{\"datasetId\":\"$DATASET_ID\",\"reportType\":\"$REPORT_TYPE\"}" \
-          $BASE_URL/api/v1/report)
-
-        REPORT_ID=$(echo $REPORT_RESPONSE | jq -r '.reportId')
-        echo "✅ Report ID: $REPORT_ID"
+        REPORT_TASK_ID=$(echo "$REPORT_RESPONSE" | jq -r '.task_id // .id')
+        if [ -z "$REPORT_TASK_ID" ] || [ "$REPORT_TASK_ID" = "null" ]; then
+          echo "❌ No report task id in response"; exit 1
+        fi
+        echo "✅ Report task id: $REPORT_TASK_ID"
 
         echo "📡 Step 5: Get active tasks"
         curl -s $BASE_URL/api/v1/tasks | jq
 
         echo "⏳ Step 6: Wait for report task to complete"
         while true; do
-          STATUS=$(curl -s $BASE_URL/api/v1/tasks/$REPORT_ID | jq -r '.status')
-          echo "   Report task status: $STATUS"
-          if [[ "$STATUS" == "DONE" || "$STATUS" == "COMPLETED" ]]; then
-            echo "✅ Report task completed"
+          STATUS=$(curl -s -L -k "$BASE_URL/tasks/$REPORT_TASK_ID" -H 'accept: application/json' | jq -r '.status')
+          echo "   Task status: $STATUS"
+          if [[ "$STATUS" == "SUCCESS" ]]; then
+            echo "Task completed successfully"
             break
+          elif [[ "$STATUS" == "FAILED" || "$STATUS" == "ERROR" ]]; then
+            echo "Task failed!"
+            exit 1
           fi
           sleep 5
         done
 
-        echo "📥 Step 7: Get report and save as $OUTDIR/diff.json"
-        curl -s $BASE_URL/api/v1/report/$REPORT_ID > $OUTDIR/diff.json
-        echo "✅ Report saved: $OUTDIR/diff.json"
+        echo "📥 Step 7: Download report file"
+        
+        APPLICATION_PROFILE="skos-core-en-only"
+        TEMPLATE_TYPE="json"
+        
+        DL_URL="$BASE_URL/diffs/report?dataset_id=$DATASET_ID&application_profile=$APPLICATION_PROFILE&template_type=$TEMPLATE_TYPE"
+        
+        echo "→ GET $DL_URL"
+        curl -s -L -k -X GET \
+          "$DL_URL" \
+          -H "accept: text/html" \
+          -o "$OUTDIR/diff.json"
 
     - name: Stop RDF Differ Services and Traefik
       run: |
