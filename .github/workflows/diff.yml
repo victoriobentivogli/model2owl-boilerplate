@@ -163,6 +163,8 @@ jobs:
           "$DL_URL" \
           -H "accept: text/html" \
           -o "$OUTDIR/diff.json"
+        
+        jq -S . "$OUTDIR/diff.json" | sponge "$OUTDIR/diff.json"
 
     - name: Stop RDF Differ Services and Traefik
       run: |
