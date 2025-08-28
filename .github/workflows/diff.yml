@@ -164,7 +164,7 @@ jobs:
           -H "accept: text/html" \
           -o "$OUTDIR/diff.json"
         
-        jq -S . "$OUTDIR/diff.json" | sponge "$OUTDIR/diff.json"
+        jq -S . "$OUTDIR/diff.json" > "$OUTDIR/diff.json.tmp" && mv "$OUTDIR/diff.json.tmp" "$OUTDIR/diff.json"
 
     - name: Stop RDF Differ Services and Traefik
       run: |
