@@ -132,7 +132,10 @@ jobs:
         echo "✅ Report task id: $REPORT_TASK_ID"
 
         echo "📡 Step 5: Get active tasks"
-        curl -s $BASE_URL/api/v1/tasks | jq
+        ACTIVE_TASKS=$(curl -s -L -k -X GET "$BASE_URL/tasks/active" -H 'accept: application/json')
+        
+        echo "📥 Active tasks response:"
+        echo "$ACTIVE_TASKS" | jq
 
         echo "⏳ Step 6: Wait for report task to complete"
         while true; do
