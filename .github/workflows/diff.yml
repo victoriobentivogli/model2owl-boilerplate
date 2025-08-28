@@ -108,6 +108,24 @@ jobs:
           sleep 5
         done
 
+        echo "🚀 Step 4: Request report"
+        REPORT_REQ=$(jq -n \
+          --arg ap "skos-core-en-only" \
+          --arg ds "$DATASET_ID" \
+          --arg rebuild "true" \
+          --arg tmpl "json" \
+          '{application_profile:$ap, dataset_id:$ds, rebuild:$rebuild, template_type:$tmpl}')
+        
+        REPORT_RESPONSE=$(curl -s -L -k -X POST \
+          "$BASE_URL/diffs/report" \
+          -H "accept: */*" \
+          -H "Content-Type: application/json" \
+          -d "$REPORT_REQ")
+        
+        echo "📥 Report request response:"
+        echo "$REPORT_RESPONSE" | jq .
+        
+        
         echo "🚀 Step 4: Request report (AP report type)"
         REPORT_TYPE=AP
         REPORT_RESPONSE=$(curl -s -X POST \
