@@ -1,0 +1,158 @@
+name: RDF Diff
+
+on:
+  push:
+    paths:
+      - 'files/**'
+  workflow_dispatch:
+
+jobs:
+  rdf-diff:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout this repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0  # Required for committing back
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y make git jq
+
+    - name: Clone rdf-differ-ws (but exclude from commits)
+      run: |
+        git clone https://github.com/meaningfy-ws/rdf-differ-ws.git
+        echo "rdf-differ-ws/" >> .gitignore
+        echo "✅ Added rdf-differ-ws/ to .gitignore"
+
+    - name: Start Traefik
+      run: |
+        cd rdf-differ-ws
+        make start-traefik
+        echo "🔎 Running containers after start-traefik:"
+        docker ps
+
+    - name: Start RDF Differ Services
+      run: |
+        cd rdf-differ-ws
+        make start-services
+        echo "🔎 Running containers after start-services:"
+        docker ps
+
+    - name: Wait for service to be ready
+      run: |
+        echo "⏳ Waiting 10 seconds for rdf-differ-ws (via Traefik) to be ready..."
+        sleep 10
+
+    - name: Perform full RDF Diff and Report workflow
+      run: |
+        FILE1=files/first.ttl
+        FILE2=files/second.ttl
+        OUTDIR=diff-output
+        mkdir -p $OUTDIR
+
+        BASE_URL=http://api.localhost
+
+        echo "🚀 Step 1: Create diff"
+        RESPONSE=$(curl -s -L -k -X POST \
+          $BASE_URL/diffs \
+          -H 'accept: */*' \
+          -H 'Content-Type: multipart/form-data' \
+          -F 'dataset_description=differ' \
+          -F 'dataset_name=diffus' \
+          -F 'dataset_id=diff' \
+          -F 'dataset_uri=http://diff.com' \
+          -F 'new_version_file_content=@files/second.ttl;type=text/turtle' \
+          -F 'new_version_id=new' \
+          -F 'old_version_file_content=@files/first.ttl;type=text/turtle' \
+          -F 'old_version_id=old')
+        
+        echo "📥 Raw response from Create diff:"
+        echo "$RESPONSE"
+        
+        if echo "$RESPONSE" | jq . >/dev/null 2>&1; then
+          DATASET_ID=$(echo $RESPONSE | jq -r '.dataset_id')
+          echo "✅ Dataset ID: $DATASET_ID"
+        else
+          echo "❌ Create diff failed or returned non-JSON:"
+          echo "$RESPONSE"
+          exit 1
+        fi
+
+        echo "Step 2: Get active tasks"
+        ACTIVE_TASKS=$(curl -s -L -k -X GET "$BASE_URL/tasks/active" -H 'accept: application/json')
+        
+        echo "📥 Active tasks response:"
+        echo "$ACTIVE_TASKS" | jq
+        
+        TASK_ID=$(echo "$ACTIVE_TASKS" | jq -r '.[0].id')
+        if [ -z "$TASK_ID" ] || [ "$TASK_ID" == "null" ]; then
+          echo "No active tasks found!"
+          exit 1
+        fi
+        echo "Found active task ID: $TASK_ID"
+
+        echo "Step 3: Wait for task ($TASK_ID) to complete"
+        while true; do
+          STATUS=$(curl -s -L -k "$BASE_URL/tasks/$TASK_ID" -H 'accept: application/json' | jq -r '.status')
+          echo "   Task status: $STATUS"
+          if [[ "$STATUS" == "SUCCESS" ]]; then
+            echo "Task completed successfully"
+            break
+          elif [[ "$STATUS" == "FAILED" || "$STATUS" == "ERROR" ]]; then
+            echo "Task failed!"
+            exit 1
+          fi
+          sleep 5
+        done
+
+        echo "🚀 Step 4: Request report (AP report type)"
+        REPORT_TYPE=AP
+        REPORT_RESPONSE=$(curl -s -X POST \
+          -H "Content-Type: application/json" \
+          -d "{\"datasetId\":\"$DATASET_ID\",\"reportType\":\"$REPORT_TYPE\"}" \
+          $BASE_URL/api/v1/report)
+
+        REPORT_ID=$(echo $REPORT_RESPONSE | jq -r '.reportId')
+        echo "✅ Report ID: $REPORT_ID"
+
+        echo "📡 Step 5: Get active tasks"
+        curl -s $BASE_URL/api/v1/tasks | jq
+
+        echo "⏳ Step 6: Wait for report task to complete"
+        while true; do
+          STATUS=$(curl -s $BASE_URL/api/v1/tasks/$REPORT_ID | jq -r '.status')
+          echo "   Report task status: $STATUS"
+          if [[ "$STATUS" == "DONE" || "$STATUS" == "COMPLETED" ]]; then
+            echo "✅ Report task completed"
+            break
+          fi
+          sleep 5
+        done
+
+        echo "📥 Step 7: Get report and save as $OUTDIR/diff.json"
+        curl -s $BASE_URL/api/v1/report/$REPORT_ID > $OUTDIR/diff.json
+        echo "✅ Report saved: $OUTDIR/diff.json"
+
+    - name: Stop RDF Differ Services and Traefik
+      run: |
+        cd rdf-differ-ws
+        make stop-services
+        echo "🔎 Running containers after stop-services:"
+        docker ps
+
+        make stop-traefik
+        echo "🔎 Running containers after stop-traefik:"
+        docker ps
+
+    - name: Commit and push diff result
+      run: |
+        git config user.name "github-actions[bot]"
+        git config user.email "github-actions[bot]@users.noreply.github.com"
+        git add diff-output
+        git commit -m "Add RDF diff result"
+        git push
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
