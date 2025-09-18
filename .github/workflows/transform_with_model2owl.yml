@@ -371,6 +371,10 @@ jobs:
             mkdir -p $OUTPUT_PATH_RESPEC
             cd model2owl
             ls -la
+            echo "+++++++++++++++++prepare namespaces for ReSpec generation++++++++++++++++++++++++++++"
+            # Generate enriched namespaces first (required for ReSpec generation)
+            make gen-enriched-ns-file \
+              NAMESPACES_USER_XML_FILE_PATH=${NS_XML_FILE_PATH}
             echo "+++++++++++++++++generate ReSpec JSON data++++++++++++++++++++++++++++"
             # First generate the ReSpec JSON data file
             make respec-json \
