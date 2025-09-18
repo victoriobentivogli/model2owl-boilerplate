@@ -24,6 +24,8 @@
 
     <!-- XSD datatypes that conform to OWL2 requirements   -->
     <xsl:variable name="xsdAndRdfDataTypes" select="fn:doc('xsdAndRdfDataTypes.xml')"/>
+        <!-- JSON metadata configuration -->
+    <xsl:variable name="metadataJson" select="fn:json-doc('metadata.json')"/>
     <!--    set default namespace interpretation for lexical Qnames that are not prefix:localSegment or :localSegment. If this
     is set to true localSegment will transform to :localSegment-->
     <xsl:variable name="defaultNamespaceInterpretation" select="fn:true()"/>
@@ -106,12 +108,7 @@
 
     <!-- This variable control if Object and Realisation are generated -->
     <xsl:variable name="generateObjectsAndRealisations" select="fn:false()"/>
-<!--    Set of variables for convention report-->
-    <xsl:variable name="conventionReportCopyrightText" select="'Publications Office of the European Union, 2023'"/>
-    <xsl:variable name="conventionReportAuthor" select="'Publications Office of the European Union'"/>
-    <xsl:variable name="conventionReportAuthorLocation" select="'Luxembourg'"/>
-    <xsl:variable name="conventionReportAuthorWebsite" select="'https://op.europa.eu'"/>
-    <xsl:variable name="conventionReportUMLModelName" select="'eProcurement'"/>
+
     <!-- URIs list of UML versions supported by model2owl -->
     <xsl:variable name="supportedUmlVersions"
         select="('http://www.omg.org/spec/UML/20131001',

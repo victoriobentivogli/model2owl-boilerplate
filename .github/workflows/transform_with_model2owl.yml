@@ -27,7 +27,7 @@ jobs:
 
       - name: generate convention report and glossary
         run: |
-          AVAILABLE_IMPLEMENTATIONS=(demo_ontology demo_ontology_module)
+          AVAILABLE_IMPLEMENTATIONS=(demo_ontology)
           for implementation in "${AVAILABLE_IMPLEMENTATIONS[@]}"
           do
             echo "-------------------${implementation}---------------------------------"
@@ -68,7 +68,7 @@ jobs:
 
       - name: merge implementations xmi files into one
         run: |
-          AVAILABLE_IMPLEMENTATIONS=(demo_ontology demo_ontology_module)
+          AVAILABLE_IMPLEMENTATIONS=(demo_ontology)
           cd model2owl
           mkdir -p merge-xmis
           for implementation in "${AVAILABLE_IMPLEMENTATIONS[@]}"
@@ -143,7 +143,7 @@ jobs:
 
       - name: transform step
         run: |
-          AVAILABLE_IMPLEMENTATIONS=(demo_ontology demo_ontology_module)
+          AVAILABLE_IMPLEMENTATIONS=(demo_ontology)
           for implementation in "${AVAILABLE_IMPLEMENTATIONS[@]}"
           do
             echo "-------------------${implementation} transform---------------------------------"
