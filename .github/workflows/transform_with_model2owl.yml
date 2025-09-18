@@ -267,6 +267,10 @@ jobs:
             mkdir -p $OUTPUT_PATH_JSONLD
             cd model2owl
             ls -la
+            echo "+++++++++++++++++prepare namespaces for JSON-LD context++++++++++++++++++++++++++++"
+            # Generate enriched namespaces first (required for JSON-LD context generation)
+            make gen-enriched-ns-file \
+              NAMESPACES_USER_XML_FILE_PATH=${NS_XML_FILE_PATH}
             echo "+++++++++++++++++generate JSON-LD context++++++++++++++++++++++++++++"
             make generate-jsonld-context \
               XMI_INPUT_FILE_PATH=../$CM_FILE_PATH \
