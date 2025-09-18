@@ -24,7 +24,8 @@
 
     <!-- XSD datatypes that conform to OWL2 requirements   -->
     <xsl:variable name="xsdAndRdfDataTypes" select="fn:doc('xsdAndRdfDataTypes.xml')"/>
-        <!-- JSON metadata configuration -->
+
+    <!-- JSON metadata configuration -->
     <xsl:variable name="metadataJson" select="fn:json-doc('metadata.json')"/>
     <!--    set default namespace interpretation for lexical Qnames that are not prefix:localSegment or :localSegment. If this
     is set to true localSegment will transform to :localSegment-->
@@ -48,6 +49,9 @@
 
     <!-- when a delimiter is missing in the base URI of a namespace, use this default value-->
     <xsl:variable name="defaultDelimiter" select="'#'"/>
+
+    <!-- suffix for URIs of sh:NodeShape instances in the SHACL artefact -->
+    <xsl:variable name="nodeShapeURIsuffix" select="'Shape'"/>
 
     <!-- types of elements and names for attribute types that are acceptable to produce object properties -->
     <xsl:variable name="acceptableTypesForObjectProperties"
@@ -123,11 +127,12 @@
     -->
     <xsl:variable name="translatePlainLiteralToStringTypesInSHACL" select="fn:true()"/>
 
-     <!-- If true, this option will annotate all SHACL concepts in the shapes
+    <!-- If true, this option will annotate all SHACL concepts in the shapes
     artefact with the ontology IRI defined therein, using rdfs:isDefinedBy. -->
 
     <xsl:variable name="annotateShaclConceptsWithOntology" select="fn:true()"/>
 
     <xsl:variable name="moduleReference" select="'core'"/>
+
 
 </xsl:stylesheet>
