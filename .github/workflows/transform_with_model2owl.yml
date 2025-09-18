@@ -268,7 +268,7 @@ jobs:
             cd model2owl
             ls -la
             echo "+++++++++++++++++generate JSON-LD context++++++++++++++++++++++++++++"
-            make json-ld-context \
+            make generate-jsonld-context \
               XMI_INPUT_FILE_PATH=../$CM_FILE_PATH \
               OUTPUT_FOLDER_PATH=../$OUTPUT_PATH_JSONLD \
               NAMESPACES_USER_XML_FILE_PATH=${NS_XML_FILE_PATH}
