@@ -1,0 +1,200 @@
+{# Macro for including a specific example by filename anywhere in the template #}
+{% macro includeExample(filename, examples_data, title="", show_title=true) %}
+    {% set example_data = examples_data.get(filename) %}
+    {% if example_data %}
+        <div class="example" id="example-{{ filename }}">
+            {% if show_title %}
+                <div class="example-title">
+                    {% if title %}
+                        <b>{{ title }}</b>
+                    {% else %}
+                        <b>Example: {{ example_data.name | title }}</b>
+                    {% endif %}
+                </div>
+            {% endif %}
+            
+            {% if example_data.valid %}
+                <div id="{{ filename }}-tabs" class="tabs tabsstyle">
+                    <ul>
+                        {% if example_data.type == 'turtle' %}
+                            <li><a href="#{{ filename }}-tabs-1">Turtle</a></li>
+                        {% elif example_data.type == 'jsonld' %}
+                            <li><a href="#{{ filename }}-tabs-1">JSON-LD</a></li>
+                        {% endif %}
+                        <li><a href="#{{ filename }}-tabs-2">Raw</a></li>
+                    </ul>
+                    
+                    <div id="{{ filename }}-tabs-1">
+                        <pre><code class="{% if example_data.type == 'turtle' %}turtle{% else %}json{% endif %}">{{ example_data.content }}</code></pre>
+                        <button class="buttonsample copy-button" data-clipboard-target="#{{ filename }}-tabs-1 code">Copy</button>
+                        {% if example_data.type == 'jsonld' %}
+                            <button class="buttonsample openinplayground">Open in Playground</button>
+                        {% endif %}
+                    </div>
+                    
+                    <div id="{{ filename }}-tabs-2">
+                        <pre><code>{{ example_data.raw_content }}</code></pre>
+                        <button class="buttonsample copy-button" data-clipboard-target="#{{ filename }}-tabs-2 code">Copy</button>
+                    </div>
+                </div>
+            {% else %}
+                <div class="example-error">
+                    <p><strong>Error processing example:</strong> {{ example_data.error }}</p>
+                    <pre><code>{{ example_data.raw_content }}</code></pre>
+                </div>
+            {% endif %}
+        </div>
+    {% else %}
+        <div class="example-not-found">
+            <p><strong>Example not found:</strong> {{ filename }}</p>
+            <p>Available examples: {{ examples_data.keys() | list | join(', ') }}</p>
+        </div>
+    {% endif %}
+{% endmacro %}
+
+{# Macro for rendering examples with tabs (legacy support) #}
+{% macro renderExample(example_id, example_data) %}
+<div class="example" id="{{ example_id }}-example">
+    <div class="example-title">
+        <b>Example {{ example_id }}: {{ example_data.name | title }}</b>
+    </div>
+    
+    {% if example_data.valid %}
+        <div id="{{ example_id }}-tabs" class="tabs tabsstyle">
+            <ul>
+                {% if example_data.type == 'turtle' %}
+                    <li><a href="#{{ example_id }}-tabs-1">Turtle</a></li>
+                {% elif example_data.type == 'jsonld' %}
+                    <li><a href="#{{ example_id }}-tabs-1">JSON-LD</a></li>
+                {% endif %}
+                <li><a href="#{{ example_id }}-tabs-2">Raw</a></li>
+            </ul>
+            
+            <div id="{{ example_id }}-tabs-1">
+                <pre><code class="{% if example_data.type == 'turtle' %}turtle{% else %}json{% endif %}">{{ example_data.content }}</code></pre>
+                <button class="buttonsample copy-button" data-clipboard-target="#{{ example_id }}-tabs-1 code">Copy</button>
+                {% if example_data.type == 'jsonld' %}
+                    <button class="buttonsample openinplayground">Open in Playground</button>
+                {% endif %}
+            </div>
+            
+            <div id="{{ example_id }}-tabs-2">
+                <pre><code>{{ example_data.raw_content }}</code></pre>
+                <button class="buttonsample copy-button" data-clipboard-target="#{{ example_id }}-tabs-2 code">Copy</button>
+            </div>
+        </div>
+    {% else %}
+        <div class="example-error">
+            <p><strong>Error processing example:</strong> {{ example_data.error }}</p>
+            <pre><code>{{ example_data.raw_content }}</code></pre>
+        </div>
+    {% endif %}
+</div>
+
+<style>
+.example {
+    margin: 20px 0;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 15px;
+}
+
+.example-title {
+    margin-bottom: 10px;
+    font-size: 1.1em;
+}
+
+.tabs {
+    margin-top: 10px;
+}
+
+.tabs ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    border-bottom: 1px solid #ddd;
+}
+
+.tabs ul li {
+    display: inline-block;
+    margin-right: 5px;
+}
+
+.tabs ul li a {
+    display: block;
+    padding: 8px 15px;
+    background: #f5f5f5;
+    border: 1px solid #ddd;
+    border-bottom: none;
+    text-decoration: none;
+    border-radius: 5px 5px 0 0;
+}
+
+.tabs ul li a:hover {
+    background: #e5e5e5;
+}
+
+.tabs > div {
+    border: 1px solid #ddd;
+    border-top: none;
+    padding: 15px;
+    background: white;
+}
+
+.tabs pre {
+    margin: 0;
+    background: #f8f8f8;
+    padding: 10px;
+    border-radius: 3px;
+    overflow-x: auto;
+}
+
+.tabs code {
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    font-size: 0.9em;
+}
+
+.buttonsample {
+    margin: 10px 5px 0 0;
+    padding: 5px 10px;
+    background: #007cba;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+.buttonsample:hover {
+    background: #005a87;
+}
+
+.example-error {
+    background: #ffe6e6;
+    border: 1px solid #ff9999;
+    padding: 10px;
+    border-radius: 3px;
+}
+
+.example-not-found {
+    background: #fff3cd;
+    border: 1px solid #ffeaa7;
+    padding: 10px;
+    border-radius: 3px;
+    color: #856404;
+}
+</style>
+{% endmacro %}
+
+{# Macro for rendering all examples in a section #}
+{% macro renderExamplesSection(examples_data) %}
+{% if examples_data %}
+<section id="examples" class="informative">
+    <h2>Examples</h2>
+    <p>The following examples demonstrate the usage of this vocabulary:</p>
+    
+    {% for example_id, example_data in examples_data.items() %}
+        {{ renderExample(example_id, example_data) }}
+    {% endfor %}
+</section>
+{% endif %}
+{% endmacro %}

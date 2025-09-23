@@ -1,0 +1,88 @@
+{% extends "base.j2" %}
+
+{% block pageContent %}
+    {% block abstract %}
+        {{ super() }}
+    {% endblock %}
+
+    {% block introduction %}
+        <section id="introduction">
+            <h2>Introduction</h2>
+            <p>This vocabulary provides a way to describe datasets...</p>
+            
+            {# JavaScript will automatically find this and create tabs #}
+            <div class="h3 examples" id="example1">Example 1 - Bee population dataset</div>
+            
+            <p>As shown in the example above, you can describe datasets using this vocabulary.</p>
+        </section>
+    {% endblock %}
+
+    {% block terminology %}
+        <section id="specterminology">
+            <h2>Terminology</h2>
+            <p>The following terms are used in this specification:</p>
+            
+            {# Another example - JavaScript will find this too #}
+            <div class="h3 examples" id="example2">Example 2 - Advanced dataset description</div>
+            
+            {% block usedPrefixesGen %}
+                {{ super() }}
+            {% endblock %}
+        </section>
+    {% endblock %}
+
+    {% block usages %}
+        <section class="informative">
+            <h2>Usage Guidelines</h2>
+            
+            <h3>Basic Usage</h3>
+            <p>To use this vocabulary, follow these guidelines:</p>
+            
+            {# You can include examples anywhere #}
+            <div class="h3 examples" id="example1">Basic example</div>
+            
+            <h3>Advanced Usage</h3>
+            <p>For more complex scenarios:</p>
+            
+            {# Custom example with different ID #}
+            <div class="h3 examples" id="bee-population">Bee population example</div>
+        </section>
+    {% endblock %}
+
+    {# All other blocks... #}
+    {% block overview %}
+        {{ super() }}
+    {% endblock %}
+
+    {% block mainEntities %}
+        {{ super() }}
+    {% endblock %}
+
+    {% block supportiveEntities %}
+        {{ super() }}
+    {% endblock %}
+
+    {% block datatypes %}
+        {{ super() }}
+    {% endblock %}
+
+    {% block governance %}
+        {{ super() }}
+    {% endblock %}
+
+    {% block quickReference %}
+        {{ super() }}
+    {% endblock %}
+
+    {% block resources %}
+        {{ super() }}
+    {% endblock %}
+
+{% endblock %}
+
+{# Make sure the example.js is included - it should already be in base.j2 #}
+{% block scripts %}
+    {{ super() }}
+    {# example.js should already be included in base.j2 #}
+{% endblock %}
+

@@ -1,0 +1,89 @@
+{% extends "base.j2" %}
+
+{# Load examples data - this should be loaded in your main template #}
+{% set examples_data = load_json("examples_data.json") if load_json is defined else {} %}
+
+{# Import the includeExample macro #}
+{% from "examples_macro.j2" import includeExample %}
+
+{% block pageContent %}
+    {% block abstract %}
+        {{ super() }}
+    {% endblock %}
+
+    {% block introduction %}
+        <section id="introduction">
+            <h2>Introduction</h2>
+            <p>This vocabulary provides a way to describe datasets...</p>
+            
+            {# Include a specific example anywhere with custom title #}
+            <div class="h3 examples" id="example-bee-population">Example 1 - Bee population dataset</div>
+            {{ includeExample("example1", examples_data, "Bee population dataset", show_title=false) }}
+            
+            <p>As shown in the example above, you can describe datasets using this vocabulary.</p>
+        </section>
+    {% endblock %}
+
+    {% block terminology %}
+        <section id="specterminology">
+            <h2>Terminology</h2>
+            <p>The following terms are used in this specification:</p>
+            
+            {# Include another example with default title #}
+            {{ includeExample("example2", examples_data) }}
+            
+            {% block usedPrefixesGen %}
+                {{ super() }}
+            {% endblock %}
+        </section>
+    {% endblock %}
+
+    {% block usages %}
+        <section class="informative">
+            <h2>Usage Guidelines</h2>
+            
+            <h3>Basic Usage</h3>
+            <p>To use this vocabulary, follow these guidelines:</p>
+            
+            {# Include example without title #}
+            {{ includeExample("example1", examples_data, show_title=false) }}
+            
+            <h3>Advanced Usage</h3>
+            <p>For more complex scenarios:</p>
+            
+            {# Include with custom title #}
+            {{ includeExample("example2", examples_data, "Advanced Dataset Description") }}
+        </section>
+    {% endblock %}
+
+    {# All other blocks... #}
+    {% block overview %}
+        {{ super() }}
+    {% endblock %}
+
+    {% block mainEntities %}
+        {{ super() }}
+    {% endblock %}
+
+    {% block supportiveEntities %}
+        {{ super() }}
+    {% endblock %}
+
+    {% block datatypes %}
+        {{ super() }}
+    {% endblock %}
+
+    {% block governance %}
+        {{ super() }}
+    {% endblock %}
+
+    {% block quickReference %}
+        {{ super() }}
+    {% endblock %}
+
+    {% block resources %}
+        {{ super() }}
+    {% endblock %}
+
+{% endblock %}
+
