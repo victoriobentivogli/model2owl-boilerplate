@@ -55,12 +55,6 @@ jobs:
               mkdir -p "_site/$implementation"
               cp -r "implementation/$implementation/respec/"* "_site/$implementation/"
               
-              # Ensure example.js is in the expected js folder
-              if [ -f "_site/$implementation/assets/example.js" ]; then
-                mkdir -p "_site/$implementation/js"
-                cp "_site/$implementation/assets/example.js" "_site/$implementation/js/example.js"
-                echo "Copied example.js to js folder for $implementation"
-              fi
               
               FOUND_IMPLEMENTATIONS+=("$implementation")
             else

@@ -382,9 +382,43 @@ jobs:
               OUTPUT_FOLDER_PATH=../$OUTPUT_PATH_RESPEC \
               NAMESPACES_USER_XML_FILE_PATH=${NS_XML_FILE_PATH}
             
-            echo "+++++++++++++++++prepare templates for ReSpec generation++++++++++++++++++++++++++++"
-            # Copy templates to Model2OWL directory so jinja can find them
-            cp -rf "../implementation/${implementation}/respec-resources/templates" respec-resources/
+            echo "+++++++++++++++++prepare ReSpec resources++++++++++++++++++++++++++++"
+            # Step 1: Copy base templates and js from Model2OWL (if they exist)
+            if [ -d "respec-resources/templates" ]; then
+              echo "Using Model2OWL base templates (appendix.j2, base.j2)"
+              # Keep Model2OWL's appendix.j2 and base.j2 if they exist
+            else
+              echo "No Model2OWL templates found, creating directory"
+              mkdir -p respec-resources/templates
+            fi
+            
+            # Step 2: Copy all custom templates from repository (except base.j2)
+            echo "Copying all custom templates from repository..."
+            if [ -d "../implementation/${implementation}/respec-resources/templates" ]; then
+              for template_file in "../implementation/${implementation}/respec-resources/templates"/*.j2; do
+                if [ -f "$template_file" ]; then
+                  template_name=$(basename "$template_file")
+                  if [ "$template_name" != "base.j2" ]; then
+                    echo "Copying template: $template_name"
+                    cp -f "$template_file" "respec-resources/templates/"
+                  else
+                    echo "Skipping base.j2 (keeping Model2OWL version)"
+                  fi
+                fi
+              done
+            else
+              echo "No custom templates directory found"
+            fi
+            
+            # Step 5: Override assets completely with your version
+            echo "Overriding assets with repository version..."
+            rm -rf respec-resources/assets
+            cp -rf "../implementation/${implementation}/respec-resources/assets" respec-resources/
+            
+            # Step 6: Keep Model2OWL's js folder (do not override)
+            echo "Using Model2OWL's js folder and scripts"
+            
+            echo "ReSpec resources prepared - using  templates and assets"
             
             echo "+++++++++++++++++generate ReSpec documentation++++++++++++++++++++++++++++"
             # Then generate the complete ReSpec documentation
