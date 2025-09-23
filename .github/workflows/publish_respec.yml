@@ -2,6 +2,12 @@ name: Publish ReSpec to GitHub Pages
 
 on:
   workflow_dispatch:
+  workflow_run:
+    workflows: ["transform UML model"]
+    types:
+      - completed
+    branches:
+      - feature/*
 
 
 permissions:
@@ -17,6 +23,7 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'workflow_dispatch' || github.event_name == 'push' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
