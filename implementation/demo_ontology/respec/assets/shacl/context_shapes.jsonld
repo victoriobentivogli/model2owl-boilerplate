@@ -1,0 +1,289 @@
+{
+  "@context": {
+    "sh": "http://www.w3.org/ns/shacl#",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+    "jsonld": "http://www.w3.org/ns/json-ld#",
+    "ex": "http://example.org/jsonld-validation#"
+  },
+  "@graph": [
+    {
+      "@id": "ex:JSONLDContextDocumentShape",
+      "@type": "sh:NodeShape",
+      "rdfs:label": "JSON-LD Context Document Shape",
+      "rdfs:comment": "Validates the overall structure of a JSON-LD context document",
+      "sh:targetClass": "jsonld:Context",
+      "sh:property": [
+        {
+          "sh:path": "jsonld:context",
+          "sh:name": "@context",
+          "sh:description": "The @context property must be present",
+          "sh:minCount": 1,
+          "sh:maxCount": 1,
+          "sh:severity": "sh:Violation",
+          "sh:message": "JSON-LD context document must have exactly one @context property"
+        }
+      ]
+    },
+    {
+      "@id": "ex:JSONLDContextObjectShape",
+      "@type": "sh:NodeShape",
+      "rdfs:label": "JSON-LD Context Object Shape",
+      "rdfs:comment": "Validates the structure of the @context object",
+      "sh:targetClass": "jsonld:ContextObject",
+      "sh:property": [
+        {
+          "sh:path": "jsonld:hasTermDefinition",
+          "sh:name": "term definitions",
+          "sh:description": "Context should contain term definitions",
+          "sh:minCount": 1,
+          "sh:severity": "sh:Info",
+          "sh:message": "Context object should contain at least one term definition"
+        }
+      ]
+    },
+    {
+      "@id": "ex:TermDefinitionShape",
+      "@type": "sh:NodeShape",
+      "rdfs:label": "JSON-LD Term Definition Shape",
+      "rdfs:comment": "Validates individual term definitions in the context",
+      "sh:targetClass": "jsonld:TermDefinition",
+      "sh:property": [
+        {
+          "sh:path": "jsonld:id",
+          "sh:name": "@id",
+          "sh:description": "Term definition should have an @id mapping",
+          "sh:datatype": "xsd:anyURI",
+          "sh:severity": "sh:Warning",
+          "sh:message": "Term definition should specify an @id mapping to a valid URI"
+        },
+        {
+          "sh:path": "jsonld:type",
+          "sh:name": "@type",
+          "sh:description": "Term definition may specify a @type",
+          "sh:in": [
+            "@id",
+            "@vocab",
+            "xsd:string",
+            "xsd:boolean",
+            "xsd:integer",
+            "xsd:decimal",
+            "xsd:double",
+            "xsd:dateTime",
+            "xsd:date"
+          ],
+          "sh:severity": "sh:Info",
+          "sh:message": "If specified, @type should be a valid JSON-LD type"
+        },
+        {
+          "sh:path": "jsonld:container",
+          "sh:name": "@container",
+          "sh:description": "Term definition may specify a @container",
+          "sh:in": [
+            "@list",
+            "@set",
+            "@language",
+            "@index",
+            "@id",
+            "@graph",
+            "@type"
+          ],
+          "sh:severity": "sh:Info",
+          "sh:message": "If specified, @container should be a valid JSON-LD container type"
+        }
+      ]
+    },
+    {
+      "@id": "ex:NamespacePrefixShape",
+      "@type": "sh:NodeShape",
+      "rdfs:label": "Namespace Prefix Shape",
+      "rdfs:comment": "Validates namespace prefix definitions",
+      "sh:targetClass": "jsonld:NamespacePrefix",
+      "sh:property": [
+        {
+          "sh:path": "jsonld:prefixName",
+          "sh:name": "prefix name",
+          "sh:description": "Prefix name should follow naming conventions",
+          "sh:pattern": "^[a-zA-Z][a-zA-Z0-9_-]*$",
+          "sh:severity": "sh:Warning",
+          "sh:message": "Prefix names should start with a letter and contain only letters, numbers, underscores, or hyphens"
+        },
+        {
+          "sh:path": "jsonld:namespaceURI",
+          "sh:name": "namespace URI",
+          "sh:description": "Namespace URI should be a valid HTTP(S) URI",
+          "sh:pattern": "^https?://.+",
+          "sh:severity": "sh:Violation",
+          "sh:message": "Namespace URI should be a valid HTTP or HTTPS URI"
+        }
+      ]
+    },
+    {
+      "@id": "ex:OntologyTermShape",
+      "@type": "sh:NodeShape",
+      "rdfs:label": "Ontology Term Shape",
+      "rdfs:comment": "Validates terms that reference ontology concepts",
+      "sh:targetClass": "jsonld:OntologyTerm",
+      "sh:property": [
+        {
+          "sh:path": "jsonld:id",
+          "sh:name": "@id",
+          "sh:description": "Ontology terms must have valid ontology URIs",
+          "sh:pattern": "^http://data\\.europa\\.eu/a4g/ontology#.+",
+          "sh:severity": "sh:Warning",
+          "sh:message": "Ontology terms should reference the correct ontology namespace"
+        }
+      ]
+    },
+    {
+      "@id": "ex:ClassTermShape",
+      "@type": "sh:NodeShape",
+      "rdfs:label": "Class Term Shape",
+      "rdfs:comment": "Validates terms that represent classes",
+      "sh:targetClass": "jsonld:ClassTerm",
+      "sh:property": [
+        {
+          "sh:path": "jsonld:type",
+          "sh:name": "@type",
+          "sh:description": "Class terms typically use @id type",
+          "sh:hasValue": "@id",
+          "sh:severity": "sh:Info",
+          "sh:message": "Class terms typically should have @type: '@id'"
+        }
+      ]
+    },
+    {
+      "@id": "ex:PropertyTermShape",
+      "@type": "sh:NodeShape",
+      "rdfs:label": "Property Term Shape",
+      "rdfs:comment": "Validates terms that represent properties",
+      "sh:targetClass": "jsonld:PropertyTerm",
+      "sh:property": [
+        {
+          "sh:path": "jsonld:type",
+          "sh:name": "@type",
+          "sh:description": "Property terms should specify appropriate type",
+          "sh:in": [
+            "@id",
+            "@vocab",
+            "xsd:string",
+            "xsd:boolean",
+            "xsd:integer",
+            "xsd:decimal",
+            "xsd:double",
+            "xsd:dateTime",
+            "xsd:date"
+          ],
+          "sh:severity": "sh:Info",
+          "sh:message": "Property terms should specify an appropriate @type"
+        }
+      ]
+    },
+    {
+      "@id": "ex:ContainerDefinitionShape",
+      "@type": "sh:NodeShape",
+      "rdfs:label": "Container Definition Shape",
+      "rdfs:comment": "Validates @container specifications",
+      "sh:targetClass": "jsonld:ContainerDefinition",
+      "sh:property": [
+        {
+          "sh:path": "jsonld:container",
+          "sh:name": "@container",
+          "sh:description": "Container value should be valid",
+          "sh:in": [
+            "@set",
+            "@list",
+            "@language",
+            "@index",
+            "@id",
+            "@graph",
+            "@type"
+          ],
+          "sh:severity": "sh:Violation",
+          "sh:message": "@container must specify a valid container type"
+        }
+      ]
+    },
+    {
+      "@id": "ex:LanguageMapShape",
+      "@type": "sh:NodeShape",
+      "rdfs:label": "Language Map Shape",
+      "rdfs:comment": "Validates language map configurations",
+      "sh:targetClass": "jsonld:LanguageMap",
+      "sh:property": [
+        {
+          "sh:path": "jsonld:container",
+          "sh:name": "@container",
+          "sh:description": "Language maps should use @language container",
+          "sh:hasValue": "@language",
+          "sh:severity": "sh:Violation",
+          "sh:message": "Language maps must specify @container: '@language'"
+        }
+      ]
+    },
+    {
+      "@id": "ex:ReversePropertyShape",
+      "@type": "sh:NodeShape",
+      "rdfs:label": "Reverse Property Shape",
+      "rdfs:comment": "Validates @reverse property definitions",
+      "sh:targetClass": "jsonld:ReverseProperty",
+      "sh:property": [
+        {
+          "sh:path": "jsonld:reverse",
+          "sh:name": "@reverse",
+          "sh:description": "Reverse properties must specify @reverse",
+          "sh:minCount": 1,
+          "sh:datatype": "xsd:anyURI",
+          "sh:severity": "sh:Violation",
+          "sh:message": "Reverse properties must specify a valid @reverse URI"
+        }
+      ]
+    },
+    {
+      "@id": "ex:URIValidationShape",
+      "@type": "sh:NodeShape",
+      "rdfs:label": "URI Validation Shape",
+      "rdfs:comment": "Validates that @id values are proper URIs",
+      "sh:targetClass": "jsonld:TermDefinition",
+      "sh:property": [
+        {
+          "sh:path": "jsonld:id",
+          "sh:name": "@id URI validation",
+          "sh:description": "All @id values should be valid URIs",
+          "sh:nodeKind": "sh:IRI",
+          "sh:severity": "sh:Violation",
+          "sh:message": "@id values must be valid IRIs/URIs"
+        }
+      ]
+    },
+    {
+      "@id": "ex:KeywordValidationShape",
+      "@type": "sh:NodeShape",
+      "rdfs:label": "JSON-LD Keyword Validation Shape",
+      "rdfs:comment": "Ensures proper use of JSON-LD keywords",
+      "sh:targetClass": "jsonld:TermDefinition",
+      "sh:sparql": [
+        {
+          "sh:message": "Reserved JSON-LD keywords should not be redefined",
+          "sh:severity": "sh:Violation",
+          "sh:select": "SELECT $this ?keyword WHERE { $this jsonld:termName ?keyword . FILTER(?keyword IN (\"@context\", \"@id\", \"@value\", \"@language\", \"@type\", \"@container\", \"@list\", \"@set\", \"@reverse\", \"@index\", \"@base\", \"@vocab\", \"@graph\")) }"
+        }
+      ]
+    },
+    {
+      "@id": "ex:ContextConsistencyShape",
+      "@type": "sh:NodeShape",
+      "rdfs:label": "Context Consistency Shape",
+      "rdfs:comment": "Validates overall consistency of the context",
+      "sh:targetClass": "jsonld:Context",
+      "sh:sparql": [
+        {
+          "sh:message": "Duplicate term definitions found",
+          "sh:severity": "sh:Warning",
+          "sh:select": "SELECT $this ?term WHERE { $this jsonld:hasTermDefinition ?term1 . $this jsonld:hasTermDefinition ?term2 . ?term1 jsonld:termName ?name . ?term2 jsonld:termName ?name . FILTER(?term1 != ?term2) BIND(?name as ?term) }"
+        }
+      ]
+    }
+  ]
+}
