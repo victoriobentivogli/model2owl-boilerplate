@@ -421,19 +421,10 @@ jobs:
             rm -rf respec-resources/assets
             cp -rf "../implementation/${implementation}/respec_resources/assets" respec-resources/
             
-            # Step 6: Override js folder with custom version if it exists
-            if [ -d "../implementation/${implementation}/respec_resources/js" ]; then
-              echo "Overriding js folder with repository version..."
-              rm -rf respec-resources/js
-              cp -rf "../implementation/${implementation}/respec_resources/js" respec-resources/
-            else
-              echo "Using Model2OWL's js folder and scripts"
-            fi
-            
             echo "ReSpec resources prepared - using  templates and assets"
             
             echo "+++++++++++++++++generate ReSpec documentation++++++++++++++++++++++++++++"
-            # Then generate the complete ReSpec documentation
+            # First generate the complete ReSpec documentation
             make generate-respec \
               XMI_INPUT_FILE_PATH=../$CM_FILE_PATH \
               RESPEC_OUTPUT_DIR=../$OUTPUT_PATH_RESPEC \
@@ -446,6 +437,16 @@ jobs:
               SHACL_SHAPES_FILE_PATH=../$SHACL_SHAPES_PATH \
               JSONLD_CONTEXT_FILE_PATH=../$JSONLD_CONTEXT_PATH \
               NAMESPACES_USER_XML_FILE_PATH=${NS_XML_FILE_PATH}
+            
+            echo "+++++++++++++++++override JS files after ReSpec generation++++++++++++++++++++++++++++"
+            # Override js folder with custom version AFTER ReSpec generation to prevent Model2OWL from overwriting
+            if [ -d "../implementation/${implementation}/respec_resources/js" ]; then
+              echo "Overriding js folder with repository version (post-generation)..."
+              rm -rf ../$OUTPUT_PATH_RESPEC/js
+              cp -rf "../implementation/${implementation}/respec_resources/js" ../$OUTPUT_PATH_RESPEC/
+            else
+              echo "Using Model2OWL's default js folder and scripts"
+            fi
             
             echo "+++++++++++++++++copy SHACL shapes to assets++++++++++++++++++++++++++++"
             # Copy SHACL shapes to assets/shacl directory for validation 
