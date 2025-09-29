@@ -339,7 +339,7 @@ Your customizable template that **extends** `base.j2`:
 Copy the `respec_resources` folder from an existing implementation (like `demo_ontology`) as your starting point:
 
 ```bash
-cp -r implementation/demo_ontology/respec_resources implementation/yourModel/
+cp -r ./respec_resources_example implementation/yourModel/
 ```
 
 #### 2. Edit the Main Template
@@ -352,12 +352,25 @@ Modify `respec_resources/templates/main.j2` to:
 Place your assets in `respec_resources/assets/`:
 - **Images**: `assets/img/` - Screenshots, diagrams, logos
 - **Examples**: `assets/examples/` - JSON-LD, Turtle, XML examples that demonstrate your ontology usage
+- **SHACL Shapes**: `assets/shacl/` - SHACL validation shapes files (automatically copied from generated artifacts)
+  - `ontology_shapes.ttl` - Main ontology SHACL shapes (Turtle format, universal name)
+  - `context_shapes.jsonld` - JSON-LD context validation shapes (JSON-LD format, following DCAT-AP approach)
 
 #### 4. Example Integration
 The ReSpec system automatically processes files in `assets/examples/`:
-- Files are made available in the final documentation
-- JavaScript automatically creates tabbed interfaces for examples
-- Supported formats: `.jsonld`, `.ttl`, `.rdf`, `.xml`, `.json`
+  - Files are made available in the final documentation
+  - JavaScript automatically creates tabbed interfaces for examples
+  - **Copy** buttons allow users to copy examples to clipboard
+  - **Validate** buttons perform basic RDF syntax validation and reference local SHACL shapes files
+    - **Turtle validation**: Checks syntax, prefixes, and triple structure
+    - **JSON-LD validation**: Validates JSON syntax, @context structure, and term definitions
+  - **Open in Playground** button opens JSON-LD examples in the JSON-LD Playground
+  - **SHACL Validation**: Complete validation using universal SHACL shapes files:
+    - `assets/shacl/ontology_shapes.ttl` for ontology validation
+    - `assets/shacl/context_shapes.jsonld` for JSON-LD context validation
+**SHACL shapes file name convention**:
+  - `ontology_shapes.ttl` -for TTL validation
+  - `context_shapes.jsonld` - for JSON-LD context validation
 
 Example in your template:
 ```jinja2
@@ -392,10 +405,9 @@ The workflow generates a complete documentation package in the `respec/` directo
 
 ### GitHub Pages Integration
 
-The generated ReSpec documentation is automatically published to GitHub Pages, creating a professional documentation website for your ontology that includes:
+The generated ReSpec documentation is automatically published to GitHub Pages, creating a documentation website for your ontology that includes:
 - Interactive examples
 - Downloadable artifacts
-- Responsive design
 - Search functionality
 
 

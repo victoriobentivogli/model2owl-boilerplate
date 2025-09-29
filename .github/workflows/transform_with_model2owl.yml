@@ -421,8 +421,14 @@ jobs:
             rm -rf respec-resources/assets
             cp -rf "../implementation/${implementation}/respec_resources/assets" respec-resources/
             
-            # Step 6: Keep Model2OWL's js folder (do not override)
-            echo "Using Model2OWL's js folder and scripts"
+            # Step 6: Override js folder with custom version if it exists
+            if [ -d "../implementation/${implementation}/respec_resources/js" ]; then
+              echo "Overriding js folder with repository version..."
+              rm -rf respec-resources/js
+              cp -rf "../implementation/${implementation}/respec_resources/js" respec-resources/
+            else
+              echo "Using Model2OWL's js folder and scripts"
+            fi
             
             echo "ReSpec resources prepared - using  templates and assets"
             
@@ -440,6 +446,18 @@ jobs:
               SHACL_SHAPES_FILE_PATH=../$SHACL_SHAPES_PATH \
               JSONLD_CONTEXT_FILE_PATH=../$JSONLD_CONTEXT_PATH \
               NAMESPACES_USER_XML_FILE_PATH=${NS_XML_FILE_PATH}
+            
+            echo "+++++++++++++++++copy SHACL shapes to assets++++++++++++++++++++++++++++"
+            # Copy SHACL shapes to assets/shacl directory for validation 
+            mkdir -p ../$OUTPUT_PATH_RESPEC/assets/shacl
+            # Copy main ontology SHACL shapes 
+            cp -f ../implementation/$implementation/shacl_shapes/${implementation}_CM_shapes.ttl ../$OUTPUT_PATH_RESPEC/assets/shacl/ontology_shapes.ttl
+            # Copy JSON-LD context shapes (if exists in respec_resources)
+            if [ -f "../implementation/$implementation/respec_resources/assets/shacl/context_shapes.jsonld" ]; then
+              cp -f "../implementation/$implementation/respec_resources/assets/shacl/context_shapes.jsonld" ../$OUTPUT_PATH_RESPEC/assets/shacl/
+            fi
+            echo "SHACL shapes copied to assets/shacl directory"
+            
             echo "-------------------end ReSpec generation---------------------------------"
 
             sed -i "s/..\/implementation\/${implementation}\/model2owl-config/test\/ePO-default-config/g" config-proxy.xsl
