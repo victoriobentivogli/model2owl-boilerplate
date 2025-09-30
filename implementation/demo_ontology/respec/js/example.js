@@ -147,35 +147,39 @@ async function validateRDF(content, contentType) {
  * @param {string} contentType - The content type (turtle or jsonld)
  */
 async function performSHACLValidation(dataContent, shaclShapes, contentType) {
-    return await validateWithITB(dataContent, shaclShapes, contentType);
+    if (contentType === 'jsonld') {
+        return await validateJSONLDWithITB(dataContent, shaclShapes);
+    } else {
+        return await validateTurtleWithITB(dataContent, shaclShapes);
+    }
 }
 
 /**
- * Validates using the Interoperability Testbed (ITB) validation service
- * Uses JSON payload format as specified in ITB API documentation
+ * Validates Turtle content with Turtle SHACL shapes using ITB
+ * @param {string} turtleData - The Turtle RDF data to validate
+ * @param {string} turtleShapes - The Turtle SHACL shapes
  */
-async function validateWithITB(dataContent, shaclShapes, contentType) {
+async function validateTurtleWithITB(turtleData, turtleShapes) {
     const itbEndpoint = 'https://www.itb.ec.europa.eu/shacl/any/api/validate';
     
     try {
         // Create base64 encoded content for ITB API
-        const encodedData = btoa(unescape(encodeURIComponent(dataContent)));
-        const encodedShapes = btoa(unescape(encodeURIComponent(shaclShapes)));
+        const encodedData = btoa(unescape(encodeURIComponent(turtleData)));
+        const encodedShapes = btoa(unescape(encodeURIComponent(turtleShapes)));
         
-        // Prepare JSON payload according to ITB API specification
-        // For the "any" domain, we need to use externalRules instead of shaclFile
+        // Prepare JSON payload for Turtle validation
         const payload = {
             contentToValidate: encodedData,
-            contentSyntax: contentType === 'jsonld' ? 'application/ld+json' : 'text/turtle',
+            contentSyntax: 'text/turtle',
             embeddingMethod: 'BASE64',
-            reportSyntax: 'text/turtle', // Request Turtle format for consistent display
+            reportSyntax: 'text/turtle',
             loadImports: false,
             addInputToReport: false,
             addRulesToReport: false,
             externalRules: [{
                 ruleSet: encodedShapes,
                 embeddingMethod: 'BASE64',
-                ruleSyntax: contentType === 'jsonld' ? 'application/ld+json' : 'text/turtle'
+                ruleSyntax: 'text/turtle'
             }]
         };
         
@@ -261,6 +265,121 @@ async function validateWithITB(dataContent, shaclShapes, contentType) {
             throw new Error('Unable to connect to ITB validation service. Please check your internet connection.');
         } else {
             throw new Error(`ITB validation failed: ${error.message}`);
+        }
+    }
+}
+
+/**
+ * Validates JSON-LD content with JSON-LD SHACL shapes using ITB
+ * @param {string} jsonldData - The JSON-LD data to validate
+ * @param {string} jsonldShapes - The JSON-LD SHACL shapes
+ */
+async function validateJSONLDWithITB(jsonldData, jsonldShapes) {
+    const itbEndpoint = 'https://www.itb.ec.europa.eu/shacl/any/api/validate';
+    
+    try {
+        // Create base64 encoded content for ITB API
+        const encodedData = btoa(unescape(encodeURIComponent(jsonldData)));
+        const encodedShapes = btoa(unescape(encodeURIComponent(jsonldShapes)));
+        
+        // Prepare JSON payload for JSON-LD validation
+        const payload = {
+            contentToValidate: encodedData,
+            contentSyntax: 'application/ld+json',
+            embeddingMethod: 'BASE64',
+            reportSyntax: 'text/turtle', // Still request Turtle report for consistent display
+            loadImports: false,
+            addInputToReport: false,
+            addRulesToReport: false,
+            externalRules: [{
+                ruleSet: encodedShapes,
+                embeddingMethod: 'BASE64',
+                ruleSyntax: 'application/ld+json'
+            }]
+        };
+        
+        const response = await fetch(itbEndpoint, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify(payload)
+        });
+        
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`ITB validation service error: ${response.status} - ${errorText}`);
+        }
+        
+        const result = await response.json();
+        
+        // Parse ITB response - we requested Turtle format, so decode the report
+        const isValid = result.result === 'SUCCESS';
+        let turtleReport = '';
+        
+        // Decode the Base64 encoded Turtle report
+        if (result.report) {
+            try {
+                turtleReport = atob(result.report);
+                console.log('Decoded JSON-LD validation Turtle report:', turtleReport);
+            } catch (e) {
+                console.warn('Failed to decode Base64 report:', e);
+                turtleReport = result.report; // Fallback to raw report
+            }
+        } else {
+            console.warn('No report found in ITB response for JSON-LD:', result);
+        }
+        
+        // Parse basic validation info from Turtle report
+        const violations = [];
+        const warnings = [];
+        
+        // Simple parsing to check if validation passed
+        const conformsMatch = turtleReport.match(/sh:conforms\s+(true|false)/);
+        const actuallyValid = conformsMatch ? conformsMatch[1] === 'true' : isValid;
+        
+        // Look for violation results in the Turtle report
+        const violationMatches = turtleReport.match(/sh:ValidationResult/g);
+        const violationCount = violationMatches ? violationMatches.length : 0;
+        
+        if (!actuallyValid && violationCount > 0) {
+            // Extract basic violation info from Turtle (simplified parsing)
+            for (let i = 0; i < violationCount; i++) {
+                violations.push({
+                    severity: 'Violation',
+                    message: `SHACL constraint violation found in JSON-LD validation report`,
+                    focusNode: 'See full report for details'
+                });
+            }
+        }
+        
+        return {
+            valid: actuallyValid,
+            violations: violations,
+            warnings: warnings,
+            service: 'ITB',
+            timestamp: new Date().toISOString(),
+            summary: {
+                totalViolations: violations.length,
+                totalWarnings: warnings.length
+            },
+            turtleReport: turtleReport, // Full Turtle report for dialog display
+            rawReport: result // Keep original result for debugging
+        };
+        
+    } catch (error) {
+        // Enhanced error handling with specific ITB guidance for JSON-LD
+        if (error.message.includes('415')) {
+            throw new Error('ITB service requires JSON payload with proper Content-Type header for JSON-LD validation.');
+        } else if (error.message.includes('400')) {
+            throw new Error('ITB service rejected the JSON-LD request. The SHACL shapes or JSON-LD data may be invalid.');
+        } else if (error.message.includes('500')) {
+            throw new Error('ITB service is experiencing internal errors. Please try again later.');
+        } else if (error.name === 'TypeError' && error.message.includes('fetch')) {
+            throw new Error('Unable to connect to ITB validation service. Please check your internet connection.');
+        } else {
+            throw new Error(`JSON-LD ITB validation failed: ${error.message}`);
         }
     }
 }
