@@ -361,16 +361,36 @@ The ReSpec system automatically processes files in `assets/examples/`:
   - Files are made available in the final documentation
   - JavaScript automatically creates tabbed interfaces for examples
   - **Copy** buttons allow users to copy examples to clipboard
-  - **Validate** buttons perform basic RDF syntax validation and reference local SHACL shapes files
-    - **Turtle validation**: Checks syntax, prefixes, and triple structure
-    - **JSON-LD validation**: Validates JSON syntax, @context structure, and term definitions
+  - **Validate** buttons perform comprehensive SHACL validation with detailed reports
+    - **SHACL Validation**: Uses ITB (Interoperability Testbed) validation service like DCAT-AP
+    - **Detailed Reports**: Shows violations, warnings, focus nodes, and result paths
+    - **Service Integration**: Primary validation via https://www.itb.ec.europa.eu/shacl/any/api/validate
   - **Open in Playground** button opens JSON-LD examples in the JSON-LD Playground
-  - **SHACL Validation**: Complete validation using universal SHACL shapes files:
-    - `assets/shacl/ontology_shapes.ttl` for ontology validation
-    - `assets/shacl/context_shapes.jsonld` for JSON-LD context validation
+  - **SHACL Validation Features**:
+    - **Success Reports**: Shows validation success with warnings if any
+    - **Failure Reports**: Detailed violation reports with focus nodes and paths
+    - **Summary Statistics**: Violation and warning counts
+    - **Timestamps**: Validation execution time
+
 **SHACL shapes file name convention**:
-  - `ontology_shapes.ttl` -for TTL validation
-  - `context_shapes.jsonld` - for JSON-LD context validation
+  - `ontology_shapes.ttl` - for Turtle/RDF validation (universal name)
+  - `context_shapes.jsonld` - for JSON-LD context validation (universal name)
+
+**Validation Report Format**:
+```
+VALIDATION SUCCESSFUL
+
+Service: ITB
+Content Type: TURTLE
+Timestamp: 12/30/2024, 3:45:12 PM
+
+WARNINGS (1):
+1. No @prefix declarations found
+   Focus: document
+
+The RDF content is valid according to the SHACL shapes.
+SHACL shapes used: ./assets/shacl/ontology_shapes.ttl
+```
 
 Example in your template:
 ```jinja2

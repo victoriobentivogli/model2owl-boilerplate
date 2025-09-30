@@ -81,7 +81,7 @@ function createJSONLDEditorFrom(selector) {
 }
 
 /**
- * Validates RDF content using local SHACL shapes
+ * Validates RDF content using SHACL shapes and returns a detailed validation report
  * @param {string} content - The RDF content to validate
  * @param {string} contentType - The content type (turtle or jsonld)
  */
@@ -93,42 +93,23 @@ async function validateRDF(content, contentType) {
     button.disabled = true;
     
     try {
-        // Load SHACL shapes from the assets directory
-        const shaclShapesUrl = './assets/shacl/ontology_shapes.ttl';
-        const jsonldContextShaclUrl = './assets/shacl/context_shapes.jsonld';
+        // Determine which SHACL shapes to use
+        const shaclShapesUrl = contentType === 'jsonld' 
+            ? './assets/shacl/context_shapes.jsonld'
+            : './assets/shacl/ontology_shapes.ttl';
         
-        // Basic syntax validation first
-        if (contentType === 'jsonld') {
-            try {
-                JSON.parse(content);
-            } catch (e) {
-                throw new Error('Invalid JSON-LD syntax: ' + e.message);
-            }
-        }
+        // Load SHACL shapes
+        const shaclShapes = await loadFileContent(null, shaclShapesUrl);
         
-        // For now, we'll do basic validation checks
-        // In a full implementation, you would use a SHACL validation library
-        const validationResults = await performBasicValidation(content, contentType);
+        // Perform SHACL validation
+        const validationReport = await performSHACLValidation(content, shaclShapes, contentType);
         
         // Reset button state
         button.textContent = originalText;
         button.disabled = false;
         
-        if (validationResults.valid) {
-            let message = 'Validation successful! The RDF content passes basic validation checks.\n\n';
-            if (contentType === 'jsonld') {
-                message += 'For JSON-LD context validation, use: ./assets/shacl/context_shapes.jsonld\n';
-            }
-            message += 'For complete SHACL validation, use: ./assets/shacl/ontology_shapes.ttl';
-            alert(message);
-        } else {
-            let message = 'Validation failed:\n\n' + validationResults.errors.join('\n') + '\n\n';
-            if (contentType === 'jsonld') {
-                message += 'For JSON-LD context validation, use: ./assets/shacl/context_shapes.jsonld\n';
-            }
-            message += 'For detailed validation, use: ./assets/shacl/ontology_shapes.ttl';
-            alert(message);
-        }
+        // Display validation report
+        displayValidationReport(validationReport, contentType);
         
     } catch (error) {
         // Reset button state
@@ -136,95 +117,61 @@ async function validateRDF(content, contentType) {
         button.disabled = false;
         
         console.error('Validation error:', error);
-        alert('Validation error: ' + error.message + 
-              '\n\nFor manual validation, use the SHACL shapes file: ./assets/shacl/ontology_shapes.ttl');
+        
+        // Show error with fallback to ITB validation service
+        const errorMessage = `Validation error: ${error.message}\n\n` +
+            `Alternative validation options:\n` +
+            `• Use ITB Validation Service: https://www.itb.ec.europa.eu/shacl/any/upload\n` +
+            `• Manual validation with SHACL shapes: ./assets/shacl/ontology_shapes.ttl`;
+        
+        alert(errorMessage);
     }
 }
 
 /**
- * Performs basic validation checks on RDF content
- * @param {string} content - The RDF content to validate
+ * Performs SHACL validation using ITB validation service
+ * @param {string} dataContent - The RDF data to validate
+ * @param {string} shaclShapes - The SHACL shapes content
  * @param {string} contentType - The content type (turtle or jsonld)
  */
-async function performBasicValidation(content, contentType) {
-    const errors = [];
+async function performSHACLValidation(dataContent, shaclShapes, contentType) {
+    return await validateWithITB(dataContent, shaclShapes, contentType);
+}
+
+/**
+ * Validates using the Interoperability Testbed (ITB) validation service
+ * Similar to what DCAT-AP uses for their validation
+ */
+async function validateWithITB(dataContent, shaclShapes, contentType) {
+    const itbEndpoint = 'https://www.itb.ec.europa.eu/shacl/any/api/validate';
     
-    // Check if content is not empty
-    if (!content.trim()) {
-        errors.push('Content is empty');
-        return { valid: false, errors };
+    const formData = new FormData();
+    formData.append('contentToValidate', dataContent);
+    formData.append('validationType', 'string');
+    formData.append('embeddingMethod', 'string');
+    formData.append('shaclFile', new Blob([shaclShapes], { type: 'text/plain' }), 'shapes.ttl');
+    
+    const response = await fetch(itbEndpoint, {
+        method: 'POST',
+        body: formData
+    });
+    
+    if (!response.ok) {
+        throw new Error(`ITB validation service error: ${response.status}`);
     }
     
-    // Basic syntax checks
-    if (contentType === 'turtle') {
-        // Check for basic Turtle syntax elements
-        if (!content.includes('@prefix') && !content.includes('PREFIX')) {
-            errors.push('No namespace prefixes found - this may not be valid Turtle');
-        }
-        
-        // Check for basic triple structure
-        if (!content.match(/\s+\.\s*$/m) && !content.includes(' .')) {
-            errors.push('No triple statements found - missing period terminators');
-        }
-        
-    } else if (contentType === 'jsonld') {
-        try {
-            const parsed = JSON.parse(content);
-            
-            // Check for JSON-LD context
-            if (!parsed['@context']) {
-                errors.push('No @context found - this may not be valid JSON-LD');
-            } else {
-                // Validate context structure for context files
-                const context = parsed['@context'];
-                if (typeof context === 'object' && !Array.isArray(context)) {
-                    // This appears to be a JSON-LD context file
-                    const termCount = Object.keys(context).length;
-                    if (termCount === 0) {
-                        errors.push('Context is empty - should contain term definitions');
-                    } else if (termCount < 5) {
-                        errors.push('Context has very few terms (' + termCount + ') - consider adding more ontology terms');
-                    }
-                    
-                    // Check for proper term structure
-                    let validTerms = 0;
-                    for (const [term, definition] of Object.entries(context)) {
-                        if (typeof definition === 'string') {
-                            // Simple string mapping
-                            if (definition.startsWith('http://') || definition.startsWith('https://')) {
-                                validTerms++;
-                            }
-                        } else if (typeof definition === 'object' && definition['@id']) {
-                            // Complex term definition
-                            if (definition['@id'].startsWith('http://') || definition['@id'].startsWith('https://')) {
-                                validTerms++;
-                            }
-                        }
-                    }
-                    
-                    if (validTerms === 0) {
-                        errors.push('No valid URI mappings found in context');
-                    }
-                }
-            }
-            
-            // Check for basic JSON-LD structure (if not a pure context file)
-            if (!parsed['@context'] || (parsed['@type'] || parsed['@id'] || parsed['@graph'])) {
-                if (!parsed['@type'] && !parsed['@id'] && !parsed['@graph']) {
-                    errors.push('No @type, @id, or @graph found - this may not be valid JSON-LD data');
-                }
-            }
-            
-        } catch (e) {
-            errors.push('Invalid JSON syntax: ' + e.message);
-        }
-    }
+    const result = await response.json();
     
     return {
-        valid: errors.length === 0,
-        errors: errors
+        valid: result.result === 'SUCCESS',
+        report: result.report,
+        violations: result.items || [],
+        service: 'ITB',
+        timestamp: new Date().toISOString()
     };
 }
+
+
 
 $(document).ready(function () {
 
@@ -344,3 +291,102 @@ $(document).ready(function () {
 		}
 	});
 });
+
+/**
+ * Displays a detailed validation report in a modal or alert
+ * @param {Object} report - The validation report object
+ * @param {string} contentType - The content type that was validated
+ */
+function displayValidationReport(report, contentType) {
+    const timestamp = new Date(report.timestamp).toLocaleString();
+    
+    if (report.valid) {
+        // Success report
+        let message = `VALIDATION SUCCESSFUL\n\n`;
+        message += `Service: ${report.service}\n`;
+        message += `Content Type: ${contentType.toUpperCase()}\n`;
+        message += `Timestamp: ${timestamp}\n\n`;
+        
+        if (report.warnings && report.warnings.length > 0) {
+            message += `WARNINGS (${report.warnings.length}):\n`;
+            report.warnings.forEach((warning, index) => {
+                message += `${index + 1}. ${warning.message}\n`;
+                if (warning.focusNode) message += `   Focus: ${warning.focusNode}\n`;
+            });
+            message += '\n';
+        }
+        
+        message += `The RDF content is valid according to the SHACL shapes.\n`;
+        message += `SHACL shapes used: ./assets/shacl/${contentType === 'jsonld' ? 'context_shapes.jsonld' : 'ontology_shapes.ttl'}`;
+        
+        alert(message);
+    } else {
+        // Failure report
+        let message = `VALIDATION FAILED\n\n`;
+        message += `Service: ${report.service}\n`;
+        message += `Content Type: ${contentType.toUpperCase()}\n`;
+        message += `Timestamp: ${timestamp}\n\n`;
+        
+        if (report.summary) {
+            message += `SUMMARY:\n`;
+            message += `- Violations: ${report.summary.totalViolations}\n`;
+            message += `- Warnings: ${report.summary.totalWarnings}\n\n`;
+        }
+        
+        if (report.violations && report.violations.length > 0) {
+            message += `VIOLATIONS:\n`;
+            report.violations.forEach((violation, index) => {
+                message += `${index + 1}. ${violation.message}\n`;
+                if (violation.focusNode) message += `   Focus: ${violation.focusNode}\n`;
+                if (violation.resultPath) message += `   Path: ${violation.resultPath}\n`;
+            });
+            message += '\n';
+        }
+        
+        if (report.warnings && report.warnings.length > 0) {
+            message += `WARNINGS:\n`;
+            report.warnings.forEach((warning, index) => {
+                message += `${index + 1}. ${warning.message}\n`;
+                if (warning.focusNode) message += `   Focus: ${warning.focusNode}\n`;
+            });
+            message += '\n';
+        }
+        
+        message += `SHACL shapes used: ./assets/shacl/${contentType === 'jsonld' ? 'context_shapes.jsonld' : 'ontology_shapes.ttl'}\n\n`;
+        message += `For external validation, use: https://www.itb.ec.europa.eu/shacl/any/upload`;
+        
+        alert(message);
+    }
+}
+
+/**
+ * Enhanced loadFile function that can load SHACL shapes or return content as string
+ * @param {Object} editor - CodeMirror editor (null if loading for validation)
+ * @param {string} path - Path to the file
+ * @returns {Promise<string>} - File content as string when editor is null
+ */
+async function loadFileContent(editor, path) {
+    try {
+        const response = await fetch(path);
+        if (!response.ok) {
+            throw new Error(`Failed to load file: ${response.status} ${response.statusText}`);
+        }
+        
+        const content = await response.text();
+        
+        if (editor) {
+            // Set content in editor (existing functionality)
+            editor.setValue(content);
+        } else {
+            // Return content as string (for SHACL validation)
+            return content;
+        }
+    } catch (error) {
+        console.error('Error loading file:', error);
+        if (editor) {
+            editor.setValue(`# Error loading file: ${path}\n# ${error.message}`);
+        } else {
+            throw error;
+        }
+    }
+}
