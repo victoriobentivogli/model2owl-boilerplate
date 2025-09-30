@@ -197,38 +197,43 @@ async function validateTurtleWithITB(turtleData, turtleShapes) {
             throw new Error(`ITB validation service error: ${response.status} - ${errorText}`);
         }
         
-        const result = await response.json();
+        // Check content type to determine how to parse response
+        const contentType = response.headers.get('content-type');
+        let result, turtleReport = '', isValid = false;
         
-        // Parse ITB response - we requested Turtle format, so decode the report
-        const isValid = result.result === 'SUCCESS';
-        let turtleReport = '';
-        
-        // Decode the Base64 encoded Turtle report
-        if (result.report) {
-            try {
-                turtleReport = atob(result.report);
-                console.log('Decoded Turtle report:', turtleReport);
-            } catch (e) {
-                console.warn('Failed to decode Base64 report:', e);
-                turtleReport = result.report; // Fallback to raw report
+        if (contentType && contentType.includes('application/json')) {
+            // JSON response with Base64 encoded report
+            result = await response.json();
+            isValid = result.result === 'SUCCESS';
+            
+            if (result.report) {
+                try {
+                    turtleReport = atob(result.report);
+                    console.log('Decoded Turtle report from JSON:', turtleReport);
+                } catch (e) {
+                    console.warn('Failed to decode Base64 report:', e);
+                    turtleReport = result.report; // Fallback to raw report
+                }
             }
         } else {
-            console.warn('No report found in ITB response:', result);
+            // Direct Turtle response
+            turtleReport = await response.text();
+            console.log('Direct Turtle report:', turtleReport);
+            
+            // Check if validation passed by looking at sh:conforms
+            const conformsMatch = turtleReport.match(/sh:conforms\s+(true|false)/);
+            isValid = conformsMatch ? conformsMatch[1] === 'true' : true; // Default to true if no conforms found
         }
         
         // Parse basic validation info from Turtle report
         const violations = [];
         const warnings = [];
         
-        // Simple parsing to check if validation passed
-        const conformsMatch = turtleReport.match(/sh:conforms\s+(true|false)/);
-        const actuallyValid = conformsMatch ? conformsMatch[1] === 'true' : isValid;
-        
         // Look for violation results in the Turtle report
         const violationMatches = turtleReport.match(/sh:ValidationResult/g);
         const violationCount = violationMatches ? violationMatches.length : 0;
         
-        if (!actuallyValid && violationCount > 0) {
+        if (!isValid && violationCount > 0) {
             // Extract basic violation info from Turtle (simplified parsing)
             for (let i = 0; i < violationCount; i++) {
                 violations.push({
@@ -240,7 +245,7 @@ async function validateTurtleWithITB(turtleData, turtleShapes) {
         }
         
         return {
-            valid: actuallyValid,
+            valid: isValid,
             violations: violations,
             warnings: warnings,
             service: 'ITB',
@@ -250,7 +255,7 @@ async function validateTurtleWithITB(turtleData, turtleShapes) {
                 totalWarnings: warnings.length
             },
             turtleReport: turtleReport, // Full Turtle report for dialog display
-            rawReport: result // Keep original result for debugging
+            rawReport: result || turtleReport // Keep original result for debugging
         };
         
     } catch (error) {
@@ -312,38 +317,43 @@ async function validateJSONLDWithITB(jsonldData, jsonldShapes) {
             throw new Error(`ITB validation service error: ${response.status} - ${errorText}`);
         }
         
-        const result = await response.json();
+        // Check content type to determine how to parse response
+        const contentType = response.headers.get('content-type');
+        let result, turtleReport = '', isValid = false;
         
-        // Parse ITB response - we requested Turtle format, so decode the report
-        const isValid = result.result === 'SUCCESS';
-        let turtleReport = '';
-        
-        // Decode the Base64 encoded Turtle report
-        if (result.report) {
-            try {
-                turtleReport = atob(result.report);
-                console.log('Decoded JSON-LD validation Turtle report:', turtleReport);
-            } catch (e) {
-                console.warn('Failed to decode Base64 report:', e);
-                turtleReport = result.report; // Fallback to raw report
+        if (contentType && contentType.includes('application/json')) {
+            // JSON response with Base64 encoded report
+            result = await response.json();
+            isValid = result.result === 'SUCCESS';
+            
+            if (result.report) {
+                try {
+                    turtleReport = atob(result.report);
+                    console.log('Decoded JSON-LD validation Turtle report from JSON:', turtleReport);
+                } catch (e) {
+                    console.warn('Failed to decode Base64 report:', e);
+                    turtleReport = result.report; // Fallback to raw report
+                }
             }
         } else {
-            console.warn('No report found in ITB response for JSON-LD:', result);
+            // Direct Turtle response
+            turtleReport = await response.text();
+            console.log('Direct JSON-LD validation Turtle report:', turtleReport);
+            
+            // Check if validation passed by looking at sh:conforms
+            const conformsMatch = turtleReport.match(/sh:conforms\s+(true|false)/);
+            isValid = conformsMatch ? conformsMatch[1] === 'true' : true; // Default to true if no conforms found
         }
         
         // Parse basic validation info from Turtle report
         const violations = [];
         const warnings = [];
         
-        // Simple parsing to check if validation passed
-        const conformsMatch = turtleReport.match(/sh:conforms\s+(true|false)/);
-        const actuallyValid = conformsMatch ? conformsMatch[1] === 'true' : isValid;
-        
         // Look for violation results in the Turtle report
         const violationMatches = turtleReport.match(/sh:ValidationResult/g);
         const violationCount = violationMatches ? violationMatches.length : 0;
         
-        if (!actuallyValid && violationCount > 0) {
+        if (!isValid && violationCount > 0) {
             // Extract basic violation info from Turtle (simplified parsing)
             for (let i = 0; i < violationCount; i++) {
                 violations.push({
@@ -355,7 +365,7 @@ async function validateJSONLDWithITB(jsonldData, jsonldShapes) {
         }
         
         return {
-            valid: actuallyValid,
+            valid: isValid,
             violations: violations,
             warnings: warnings,
             service: 'ITB',
@@ -365,7 +375,7 @@ async function validateJSONLDWithITB(jsonldData, jsonldShapes) {
                 totalWarnings: warnings.length
             },
             turtleReport: turtleReport, // Full Turtle report for dialog display
-            rawReport: result // Keep original result for debugging
+            rawReport: result || turtleReport // Keep original result for debugging
         };
         
     } catch (error) {
