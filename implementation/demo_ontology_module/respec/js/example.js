@@ -156,14 +156,14 @@ async function validateWithITB(dataContent, shaclShapes, contentType) {
             contentToValidate: encodedData,
             contentSyntax: contentType === 'jsonld' ? 'application/ld+json' : 'text/turtle',
             embeddingMethod: 'BASE64',
-            reportSyntax: 'application/json',
+            reportSyntax: 'text/turtle', // Request Turtle format for consistent display
             loadImports: false,
             addInputToReport: false,
             addRulesToReport: false,
             externalRules: [{
                 ruleSet: encodedShapes,
                 embeddingMethod: 'BASE64',
-                ruleSyntax: 'text/turtle'
+                ruleSyntax: contentType === 'jsonld' ? 'application/ld+json' : 'text/turtle'
             }]
         };
         
@@ -183,57 +183,45 @@ async function validateWithITB(dataContent, shaclShapes, contentType) {
         
         const result = await response.json();
         
-        // Parse ITB response format (JSON GITB TRL format)
+        // Parse ITB response - we requested Turtle format, so decode the report
         const isValid = result.result === 'SUCCESS';
+        let turtleReport = '';
+        
+        // Decode the Base64 encoded Turtle report
+        if (result.report) {
+            try {
+                turtleReport = atob(result.report);
+            } catch (e) {
+                console.warn('Failed to decode Base64 report:', e);
+                turtleReport = result.report; // Fallback to raw report
+            }
+        }
+        
+        // Parse basic validation info from Turtle report
         const violations = [];
         const warnings = [];
         
-        // Extract violations from ITB GITB TRL report
-        if (result.reports && Array.isArray(result.reports)) {
-            result.reports.forEach(report => {
-                if (report.items && Array.isArray(report.items)) {
-                    report.items.forEach(item => {
-                        if (item.type === 'ERROR') {
-                            violations.push({
-                                severity: 'Violation',
-                                message: item.description || 'SHACL validation error',
-                                focusNode: item.location || 'unknown',
-                                resultPath: item.test || undefined
-                            });
-                        } else if (item.type === 'WARNING') {
-                            warnings.push({
-                                severity: 'Warning',
-                                message: item.description || 'SHACL validation warning',
-                                focusNode: item.location || 'unknown'
-                            });
-                        }
-                    });
-                }
-            });
-        }
+        // Simple parsing to check if validation passed
+        const conformsMatch = turtleReport.match(/sh:conforms\s+(true|false)/);
+        const actuallyValid = conformsMatch ? conformsMatch[1] === 'true' : isValid;
         
-        // Fallback: check for direct items array (older format)
-        if (violations.length === 0 && warnings.length === 0 && result.items && Array.isArray(result.items)) {
-            result.items.forEach(item => {
-                if (item.type === 'ERROR') {
-                    violations.push({
-                        severity: 'Violation',
-                        message: item.description || 'SHACL validation error',
-                        focusNode: item.location || 'unknown',
-                        resultPath: item.test || undefined
-                    });
-                } else if (item.type === 'WARNING') {
-                    warnings.push({
-                        severity: 'Warning',
-                        message: item.description || 'SHACL validation warning',
-                        focusNode: item.location || 'unknown'
-                    });
-                }
-            });
+        // Look for violation results in the Turtle report
+        const violationMatches = turtleReport.match(/sh:ValidationResult/g);
+        const violationCount = violationMatches ? violationMatches.length : 0;
+        
+        if (!actuallyValid && violationCount > 0) {
+            // Extract basic violation info from Turtle (simplified parsing)
+            for (let i = 0; i < violationCount; i++) {
+                violations.push({
+                    severity: 'Violation',
+                    message: `SHACL constraint violation found in validation report`,
+                    focusNode: 'See full report for details'
+                });
+            }
         }
         
         return {
-            valid: isValid,
+            valid: actuallyValid,
             violations: violations,
             warnings: warnings,
             service: 'ITB',
@@ -242,7 +230,8 @@ async function validateWithITB(dataContent, shaclShapes, contentType) {
                 totalViolations: violations.length,
                 totalWarnings: warnings.length
             },
-            rawReport: result.report // Keep original report for debugging
+            turtleReport: turtleReport, // Full Turtle report for dialog display
+            rawReport: result // Keep original result for debugging
         };
         
     } catch (error) {
@@ -383,70 +372,106 @@ $(document).ready(function () {
 });
 
 /**
- * Displays a detailed validation report in a modal or alert
+ * Displays a detailed validation report in a jQuery UI dialog
  * @param {Object} report - The validation report object
  * @param {string} contentType - The content type that was validated
  */
 function displayValidationReport(report, contentType) {
     const timestamp = new Date(report.timestamp).toLocaleString();
     
-    if (report.valid) {
-        // Success report
-        let message = `VALIDATION SUCCESSFUL\n\n`;
-        message += `Service: ${report.service}\n`;
-        message += `Content Type: ${contentType.toUpperCase()}\n`;
-        message += `Timestamp: ${timestamp}\n\n`;
-        
-        if (report.warnings && report.warnings.length > 0) {
-            message += `WARNINGS (${report.warnings.length}):\n`;
-            report.warnings.forEach((warning, index) => {
-                message += `${index + 1}. ${warning.message}\n`;
-                if (warning.focusNode) message += `   Focus: ${warning.focusNode}\n`;
-            });
-            message += '\n';
-        }
-        
-        message += `The RDF content is valid according to the SHACL shapes.\n`;
-        message += `SHACL shapes used: ./assets/shacl/${contentType === 'jsonld' ? 'context_shapes.jsonld' : 'ontology_shapes.ttl'}`;
-        
-        alert(message);
+    // Create dialog content
+    let dialogContent = '';
+    
+    if (report.turtleReport) {
+        // Display the full Turtle SHACL validation report
+        dialogContent = report.turtleReport;
     } else {
-        // Failure report
-        let message = `VALIDATION FAILED\n\n`;
-        message += `Service: ${report.service}\n`;
-        message += `Content Type: ${contentType.toUpperCase()}\n`;
-        message += `Timestamp: ${timestamp}\n\n`;
-        
-        if (report.summary) {
-            message += `SUMMARY:\n`;
-            message += `- Violations: ${report.summary.totalViolations}\n`;
-            message += `- Warnings: ${report.summary.totalWarnings}\n\n`;
+        // Fallback to text summary if no Turtle report
+        if (report.valid) {
+            dialogContent = `VALIDATION SUCCESSFUL\n\n`;
+            dialogContent += `Service: ${report.service}\n`;
+            dialogContent += `Content Type: ${contentType.toUpperCase()}\n`;
+            dialogContent += `Timestamp: ${timestamp}\n\n`;
+            
+            if (report.warnings && report.warnings.length > 0) {
+                dialogContent += `WARNINGS (${report.warnings.length}):\n`;
+                report.warnings.forEach((warning, index) => {
+                    dialogContent += `${index + 1}. ${warning.message}\n`;
+                    if (warning.focusNode) dialogContent += `   Focus: ${warning.focusNode}\n`;
+                });
+                dialogContent += '\n';
+            }
+            
+            dialogContent += `The RDF content is valid according to the SHACL shapes.\n`;
+            dialogContent += `SHACL shapes used: ./assets/shacl/${contentType === 'jsonld' ? 'context_shapes.jsonld' : 'ontology_shapes.ttl'}`;
+        } else {
+            dialogContent = `VALIDATION FAILED\n\n`;
+            dialogContent += `Service: ${report.service}\n`;
+            dialogContent += `Content Type: ${contentType.toUpperCase()}\n`;
+            dialogContent += `Timestamp: ${timestamp}\n\n`;
+            
+            if (report.summary) {
+                dialogContent += `SUMMARY:\n`;
+                dialogContent += `- Violations: ${report.summary.totalViolations}\n`;
+                dialogContent += `- Warnings: ${report.summary.totalWarnings}\n\n`;
+            }
+            
+            if (report.violations && report.violations.length > 0) {
+                dialogContent += `VIOLATIONS:\n`;
+                report.violations.forEach((violation, index) => {
+                    dialogContent += `${index + 1}. ${violation.message}\n`;
+                    if (violation.focusNode) dialogContent += `   Focus: ${violation.focusNode}\n`;
+                    if (violation.resultPath) dialogContent += `   Path: ${violation.resultPath}\n`;
+                });
+                dialogContent += '\n';
+            }
+            
+            dialogContent += `SHACL shapes used: ./assets/shacl/${contentType === 'jsonld' ? 'context_shapes.jsonld' : 'ontology_shapes.ttl'}\n\n`;
+            dialogContent += `For external validation, use: https://www.itb.ec.europa.eu/shacl/any/upload`;
         }
-        
-        if (report.violations && report.violations.length > 0) {
-            message += `VIOLATIONS:\n`;
-            report.violations.forEach((violation, index) => {
-                message += `${index + 1}. ${violation.message}\n`;
-                if (violation.focusNode) message += `   Focus: ${violation.focusNode}\n`;
-                if (violation.resultPath) message += `   Path: ${violation.resultPath}\n`;
-            });
-            message += '\n';
-        }
-        
-        if (report.warnings && report.warnings.length > 0) {
-            message += `WARNINGS:\n`;
-            report.warnings.forEach((warning, index) => {
-                message += `${index + 1}. ${warning.message}\n`;
-                if (warning.focusNode) message += `   Focus: ${warning.focusNode}\n`;
-            });
-            message += '\n';
-        }
-        
-        message += `SHACL shapes used: ./assets/shacl/${contentType === 'jsonld' ? 'context_shapes.jsonld' : 'ontology_shapes.ttl'}\n\n`;
-        message += `For external validation, use: https://www.itb.ec.europa.eu/shacl/any/upload`;
-        
-        alert(message);
     }
+    
+    // Create or update dialog
+    let dialogId = 'validation-report-dialog';
+    let $dialog = $('#' + dialogId);
+    
+    if ($dialog.length === 0) {
+        // Create new dialog
+        $dialog = $('<div id="' + dialogId + '"></div>');
+        $('body').append($dialog);
+    }
+    
+    // Set dialog content
+    $dialog.html(dialogContent);
+    
+    // Configure dialog
+    const dialogTitle = report.valid ? 'Validation Result - SUCCESS' : 'Validation Result - FAILED';
+    const titleBarColor = report.valid ? 
+        'background: linear-gradient(rgb(106, 153, 106), rgb(0, 100, 0)) darkgreen; color: rgb(255, 255, 255);' :
+        'background: linear-gradient(rgb(153, 106, 106), rgb(100, 0, 0)) darkred; color: rgb(255, 255, 255);';
+    
+    $dialog.dialog({
+        title: dialogTitle,
+        width: 700,
+        height: 400,
+        modal: true,
+        resizable: true,
+        draggable: true,
+        close: function() {
+            $(this).dialog('destroy');
+        },
+        open: function() {
+            // Style the title bar
+            $(this).parent().find('.ui-dialog-titlebar').attr('style', titleBarColor);
+            // Set white-space to pre-wrap for proper formatting
+            $(this).css({
+                'white-space': 'pre-wrap',
+                'font-family': 'monospace',
+                'font-size': '12px',
+                'overflow': 'auto'
+            });
+        }
+    });
 }
 
 /**
