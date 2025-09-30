@@ -151,16 +151,20 @@ async function validateWithITB(dataContent, shaclShapes, contentType) {
         const encodedShapes = btoa(unescape(encodeURIComponent(shaclShapes)));
         
         // Prepare JSON payload according to ITB API specification
+        // For the "any" domain, we need to use externalRules instead of shaclFile
         const payload = {
             contentToValidate: encodedData,
-            validationType: 'string',
             contentSyntax: contentType === 'jsonld' ? 'application/ld+json' : 'text/turtle',
-            embeddingMethod: 'string',
-            shaclFile: encodedShapes,
-            reportSyntax: 'application/rdf+xml',
+            embeddingMethod: 'BASE64',
+            reportSyntax: 'application/json',
             loadImports: false,
             addInputToReport: false,
-            addRulesToReport: false
+            addRulesToReport: false,
+            externalRules: [{
+                ruleSet: encodedShapes,
+                embeddingMethod: 'BASE64',
+                ruleSyntax: 'text/turtle'
+            }]
         };
         
         const response = await fetch(itbEndpoint, {
@@ -179,26 +183,50 @@ async function validateWithITB(dataContent, shaclShapes, contentType) {
         
         const result = await response.json();
         
-        // Parse ITB response format
+        // Parse ITB response format (JSON GITB TRL format)
         const isValid = result.result === 'SUCCESS';
         const violations = [];
         const warnings = [];
         
-        // Extract violations from ITB report
-        if (result.items && Array.isArray(result.items)) {
+        // Extract violations from ITB GITB TRL report
+        if (result.reports && Array.isArray(result.reports)) {
+            result.reports.forEach(report => {
+                if (report.items && Array.isArray(report.items)) {
+                    report.items.forEach(item => {
+                        if (item.type === 'ERROR') {
+                            violations.push({
+                                severity: 'Violation',
+                                message: item.description || 'SHACL validation error',
+                                focusNode: item.location || 'unknown',
+                                resultPath: item.test || undefined
+                            });
+                        } else if (item.type === 'WARNING') {
+                            warnings.push({
+                                severity: 'Warning',
+                                message: item.description || 'SHACL validation warning',
+                                focusNode: item.location || 'unknown'
+                            });
+                        }
+                    });
+                }
+            });
+        }
+        
+        // Fallback: check for direct items array (older format)
+        if (violations.length === 0 && warnings.length === 0 && result.items && Array.isArray(result.items)) {
             result.items.forEach(item => {
-                if (item.type === 'ERROR' || item.severity === 'sh:Violation') {
+                if (item.type === 'ERROR') {
                     violations.push({
                         severity: 'Violation',
-                        message: item.description || item.message || 'SHACL validation error',
-                        focusNode: item.location || item.focusNode || 'unknown',
-                        resultPath: item.test || item.path || undefined
+                        message: item.description || 'SHACL validation error',
+                        focusNode: item.location || 'unknown',
+                        resultPath: item.test || undefined
                     });
-                } else if (item.type === 'WARNING' || item.severity === 'sh:Warning') {
+                } else if (item.type === 'WARNING') {
                     warnings.push({
                         severity: 'Warning',
-                        message: item.description || item.message || 'SHACL validation warning',
-                        focusNode: item.location || item.focusNode || 'unknown'
+                        message: item.description || 'SHACL validation warning',
+                        focusNode: item.location || 'unknown'
                     });
                 }
             });
