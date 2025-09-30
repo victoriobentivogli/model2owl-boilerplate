@@ -93,7 +93,7 @@ async function validateRDF(content, contentType) {
     button.disabled = true;
     
     try {
-        // Determine which SHACL shapes to use
+        // Determine which SHACL shapes to use - ITB supports both Turtle and JSON-LD shapes
         const shaclShapesUrl = contentType === 'jsonld' 
             ? './assets/shacl/context_shapes.jsonld'
             : './assets/shacl/ontology_shapes.ttl';
@@ -118,13 +118,25 @@ async function validateRDF(content, contentType) {
         
         console.error('Validation error:', error);
         
-        // Show error with fallback to ITB validation service
-        const errorMessage = `Validation error: ${error.message}\n\n` +
-            `Alternative validation options:\n` +
-            `• Use ITB Validation Service: https://www.itb.ec.europa.eu/shacl/any/upload\n` +
-            `• Manual validation with SHACL shapes: ./assets/shacl/ontology_shapes.ttl`;
+        // Show error in dialog format
+        const errorReport = {
+            valid: false,
+            violations: [{
+                severity: 'Error',
+                message: error.message,
+                focusNode: 'Validation Service'
+            }],
+            warnings: [],
+            service: 'ITB',
+            timestamp: new Date().toISOString(),
+            summary: {
+                totalViolations: 1,
+                totalWarnings: 0
+            },
+            turtleReport: `# Validation Error\n# ${error.message}\n\n# Alternative validation options:\n# • Use ITB Validation Service: https://www.itb.ec.europa.eu/shacl/any/upload\n# • Manual validation with SHACL shapes: ./assets/shacl/ontology_shapes.ttl`
+        };
         
-        alert(errorMessage);
+        displayValidationReport(errorReport, contentType);
     }
 }
 
@@ -191,10 +203,13 @@ async function validateWithITB(dataContent, shaclShapes, contentType) {
         if (result.report) {
             try {
                 turtleReport = atob(result.report);
+                console.log('Decoded Turtle report:', turtleReport);
             } catch (e) {
                 console.warn('Failed to decode Base64 report:', e);
                 turtleReport = result.report; // Fallback to raw report
             }
+        } else {
+            console.warn('No report found in ITB response:', result);
         }
         
         // Parse basic validation info from Turtle report
