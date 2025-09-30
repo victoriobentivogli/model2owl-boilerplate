@@ -140,38 +140,36 @@ async function performSHACLValidation(dataContent, shaclShapes, contentType) {
 
 /**
  * Validates using the Interoperability Testbed (ITB) validation service
- * Similar to what DCAT-AP uses for their validation
+ * Uses JSON payload format as specified in ITB API documentation
  */
 async function validateWithITB(dataContent, shaclShapes, contentType) {
     const itbEndpoint = 'https://www.itb.ec.europa.eu/shacl/any/api/validate';
     
     try {
-        const formData = new FormData();
+        // Create base64 encoded content for ITB API
+        const encodedData = btoa(unescape(encodeURIComponent(dataContent)));
+        const encodedShapes = btoa(unescape(encodeURIComponent(shaclShapes)));
         
-        // Set content type based on the data format
-        const mimeType = contentType === 'jsonld' ? 'application/ld+json' : 'text/turtle';
-        const fileName = contentType === 'jsonld' ? 'data.jsonld' : 'data.ttl';
-        const shapesFileName = 'shapes.ttl';
-        
-        // Add the data to validate
-        formData.append('contentToValidate', new Blob([dataContent], { type: mimeType }), fileName);
-        formData.append('validationType', 'file');
-        
-        // Add SHACL shapes
-        formData.append('shaclFile', new Blob([shaclShapes], { type: 'text/turtle' }), shapesFileName);
-        formData.append('embeddingMethod', 'file');
-        
-        // Add additional parameters that ITB expects
-        formData.append('reportSyntax', 'RDF_XML');
-        formData.append('addInputToReport', 'false');
-        formData.append('addRulesToReport', 'false');
+        // Prepare JSON payload according to ITB API specification
+        const payload = {
+            contentToValidate: encodedData,
+            validationType: 'string',
+            contentSyntax: contentType === 'jsonld' ? 'application/ld+json' : 'text/turtle',
+            embeddingMethod: 'string',
+            shaclFile: encodedShapes,
+            reportSyntax: 'application/rdf+xml',
+            loadImports: false,
+            addInputToReport: false,
+            addRulesToReport: false
+        };
         
         const response = await fetch(itbEndpoint, {
             method: 'POST',
-            body: formData,
             headers: {
+                'Content-Type': 'application/json',
                 'Accept': 'application/json'
-            }
+            },
+            body: JSON.stringify(payload)
         });
         
         if (!response.ok) {
@@ -186,20 +184,20 @@ async function validateWithITB(dataContent, shaclShapes, contentType) {
         const violations = [];
         const warnings = [];
         
-        // Extract violations from ITB report if available
+        // Extract violations from ITB report
         if (result.items && Array.isArray(result.items)) {
             result.items.forEach(item => {
-                if (item.type === 'ERROR' || item.severity === 'ERROR') {
+                if (item.type === 'ERROR' || item.severity === 'sh:Violation') {
                     violations.push({
                         severity: 'Violation',
-                        message: item.description || item.message || 'Validation error',
+                        message: item.description || item.message || 'SHACL validation error',
                         focusNode: item.location || item.focusNode || 'unknown',
                         resultPath: item.test || item.path || undefined
                     });
-                } else if (item.type === 'WARNING' || item.severity === 'WARNING') {
+                } else if (item.type === 'WARNING' || item.severity === 'sh:Warning') {
                     warnings.push({
                         severity: 'Warning',
-                        message: item.description || item.message || 'Validation warning',
+                        message: item.description || item.message || 'SHACL validation warning',
                         focusNode: item.location || item.focusNode || 'unknown'
                     });
                 }
@@ -222,9 +220,9 @@ async function validateWithITB(dataContent, shaclShapes, contentType) {
     } catch (error) {
         // Enhanced error handling with specific ITB guidance
         if (error.message.includes('415')) {
-            throw new Error('ITB service does not support the provided content format. Please check the data format and try again.');
+            throw new Error('ITB service requires JSON payload with proper Content-Type header. Please check the request format.');
         } else if (error.message.includes('400')) {
-            throw new Error('ITB service rejected the request. The SHACL shapes or data format may be invalid.');
+            throw new Error('ITB service rejected the request. The SHACL shapes or RDF data may be invalid.');
         } else if (error.message.includes('500')) {
             throw new Error('ITB service is experiencing internal errors. Please try again later.');
         } else if (error.name === 'TypeError' && error.message.includes('fetch')) {
