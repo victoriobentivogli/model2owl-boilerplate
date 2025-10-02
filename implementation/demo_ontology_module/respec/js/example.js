@@ -133,7 +133,7 @@ async function validateRDF(content, contentType) {
                 totalViolations: 1,
                 totalWarnings: 0
             },
-            turtleReport: `# Validation Error\n# ${error.message}\n\n# Alternative validation options:\n# • Use ITB Validation Service: https://www.itb.ec.europa.eu/shacl/any/upload\n# • Manual validation with SHACL shapes: ./assets/shacl/ontology_shapes.ttl`
+            turtleReport: `# Validation Error\n Please check syntactical correctness of the passed data\n# ${error.message}\n\n`
         };
         
         displayValidationReport(errorReport, contentType);
@@ -265,7 +265,7 @@ async function validateTurtleWithITB(turtleData, turtleShapes) {
         } else if (error.message.includes('400')) {
             throw new Error('ITB service rejected the request. The SHACL shapes or RDF data may be invalid.');
         } else if (error.message.includes('500')) {
-            throw new Error('ITB service is experiencing internal errors. Please try again later.');
+            throw new Error('Please check syntactical correctness of the passed data. ITB service is experiencing internal errors. Please try again later.');
         } else if (error.name === 'TypeError' && error.message.includes('fetch')) {
             throw new Error('Unable to connect to ITB validation service. Please check your internet connection.');
         } else {
@@ -385,7 +385,7 @@ async function validateJSONLDWithITB(jsonldData, jsonldShapes) {
         } else if (error.message.includes('400')) {
             throw new Error('ITB service rejected the JSON-LD request. The SHACL shapes or JSON-LD data may be invalid.');
         } else if (error.message.includes('500')) {
-            throw new Error('ITB service is experiencing internal errors. Please try again later.');
+            throw new Error('Please check syntactical correctness of the passed data. ITB service is experiencing internal errors. Please try again later.');
         } else if (error.name === 'TypeError' && error.message.includes('fetch')) {
             throw new Error('Unable to connect to ITB validation service. Please check your internet connection.');
         } else {
