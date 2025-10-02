@@ -370,7 +370,7 @@ The ReSpec system automatically processes files in `assets/examples/`:
     - **Success Reports**: Shows validation success with warnings if any
     - **Failure Reports**: Detailed violation reports with focus nodes and paths
     - **Summary Statistics**: Violation and warning counts
-    - **Timestamps**: Validation execution time
+
 
 **SHACL shapes file name convention**:
   - `ontology_shapes.ttl` - for Turtle/RDF validation (universal name)
