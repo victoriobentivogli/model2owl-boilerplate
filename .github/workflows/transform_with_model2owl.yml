@@ -366,13 +366,13 @@ jobs:
             echo "OUTPUT_PATH_RESPEC is $OUTPUT_PATH_RESPEC"
 
             # Update all relative paths in metadata.json so that they are absolute paths
-            TMP_METADATA_JSON_PATH=$(mktemp --suffix=".json")
-            cp $METADATA_JSON_PATH $TMP_METADATA_JSON_PATH
+            ALTERED_METADATA_JSON_PATH=$(mktemp --suffix=".json")
+            cp $METADATA_JSON_PATH $ALTERED_METADATA_JSON_PATH
             jq --arg moduleDir "$MODULE_DIR" '
               .metadata.projectLocalResources |= map(
                 .path = ($moduleDir + "/" + .path)
               )
-            ' $TMP_METADATA_JSON_PATH > $METADATA_JSON_PATH
+            ' $METADATA_JSON_PATH > $ALTERED_METADATA_JSON_PATH
 
             mkdir -p $OUTPUT_PATH_RESPEC
             cd model2owl
@@ -431,7 +431,7 @@ jobs:
               OUTPUT_FOLDER_PATH=../$OUTPUT_PATH_RESPEC \
               RESPEC_INPUT_ASSETS_DIR=${RESPEC_ASSETS_PATH} \
               RESPEC_DATA_JSON_PATH=../$OUTPUT_PATH_RESPEC/${implementation}_CM_respec.json \
-              RESPEC_METADATA_JSON_PATH=${METADATA_JSON_PATH} \
+              RESPEC_METADATA_JSON_PATH=${ALTERED_METADATA_JSON_PATH} \
               NAMESPACES_USER_XML_FILE_PATH=${NS_XML_FILE_PATH}
             
             echo "+++++++++++++++++override JS files after ReSpec generation++++++++++++++++++++++++++++"
