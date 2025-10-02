@@ -579,11 +579,14 @@ function displayValidationReport(report, contentType) {
     let dialogId = 'validation-report-dialog';
     let $dialog = $('#' + dialogId);
     
-    if ($dialog.length === 0) {
-        // Create new dialog
-        $dialog = $('<div id="' + dialogId + '"></div>');
-        $('body').append($dialog);
+    // Clean up any existing dialog
+    if ($dialog.length > 0) {
+        $dialog.dialog('destroy').remove();
     }
+    
+    // Create new dialog
+    $dialog = $('<div id="' + dialogId + '"></div>');
+    $('body').append($dialog);
     
     // Set dialog content
     $dialog.html(dialogContent);
@@ -603,6 +606,7 @@ function displayValidationReport(report, contentType) {
         draggable: true,
         close: function() {
             $(this).dialog('destroy');
+            $(this).remove(); // Remove the dialog element from DOM
         },
         open: function() {
             // Style the title bar
