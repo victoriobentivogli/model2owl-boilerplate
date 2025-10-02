@@ -357,7 +357,8 @@ jobs:
             NS_XML_FILE_PATH="../implementation/${implementation}/model2owl-config/namespaces.xml"
             OUTPUT_PATH_RESPEC=$(echo "implementation/$implementation/respec/")
             RESPEC_ASSETS_PATH="../implementation/${implementation}/respec_resources/assets"
-            METADATA_JSON_PATH="../implementation/${implementation}/model2owl-config/metadata.json"
+            MODULE_DIR=$(realpath "implementation/${implementation}")
+            METADATA_JSON_PATH="$MODULE_DIR/model2owl-config/metadata.json"
 
             ls -la implementation/$implementation/xmi_conceptual_model/
             echo "CM_FILE_PATH is $CM_FILE_PATH"
@@ -365,7 +366,6 @@ jobs:
             echo "OUTPUT_PATH_RESPEC is $OUTPUT_PATH_RESPEC"
 
             # Update all relative paths in metadata.json so that they are absolute paths
-            MODULE_DIR=$(realpath "implementation/${implementation}")
             TMP_METADATA_JSON_PATH=$(mktemp --suffix=".json")
             cp $METADATA_JSON_PATH $TMP_METADATA_JSON_PATH
             jq --arg moduleDir "$MODULE_DIR" '
