@@ -359,45 +359,66 @@ Place your assets in `respec_resources/assets/`:
 #### 4. Example Integration
 The ReSpec system automatically processes files in `assets/examples/`:
   - Files are made available in the final documentation
-  - JavaScript automatically creates tabbed interfaces for examples
-  - **Copy** buttons allow users to copy examples to clipboard
-  - **Validate** buttons perform comprehensive SHACL validation with detailed reports
-    - **SHACL Validation**: Uses ITB (Interoperability Testbed) validation service like DCAT-AP
-    - **Detailed Reports**: Shows violations, warnings, focus nodes, and result paths
-    - **Service Integration**: Primary validation via https://www.itb.ec.europa.eu/shacl/any/api/validate
-  - **Open in Playground** button opens JSON-LD examples in the JSON-LD Playground
-  - **SHACL Validation Features**:
-    - **Success Reports**: Shows validation success with warnings if any
-    - **Failure Reports**: Detailed violation reports with focus nodes and paths
-    - **Summary Statistics**: Violation and warning counts
+  - JavaScript automatically creates tabbed interfaces for examples with:
+    - **Copy** button allow users to copy examples to clipboard
+    - **Validate** button perform comprehensive SHACL validation with detailed reports
+        - **SHACL Validation**: Uses ITB (Interoperability Testbed) validation service
+        - **Reports**: 
+            - **Success Reports**: Shows validation success with warnings if any
+            - **Failure Reports**: Detailed violation reports with focus nodes and paths
+    - **Open in Playground** button opens JSON-LD examples in the JSON-LD Playground
 
 
-**SHACL shapes file name convention**:
-  - `ontology_shapes.ttl` - for Turtle/RDF validation (universal name)
-  - `context_shapes.jsonld` - for JSON-LD context validation (universal name)
+
+#### Mandatory SHACL Shapes Files for Validation
+
+To enable the **Validate** functionality for your examples, you must provide two SHACL shapes files with the exact names as specified below. These files are required for the validation service to work correctly:
+
+- **`ontology_shapes.ttl`**  
+  - **Purpose:** Used for validating Turtle (RDF) examples.
+  - **Location:** Place this file in `respec_resources/assets/shacl/`.
+  - **Naming:** The file **must** be named  `ontology_shapes.ttl`.
+
+- **`context_shapes.jsonld`**  
+  - **Purpose:** Used for validating JSON-LD examples.
+  - **Location:** Place this file in `respec_resources/assets/shacl/`.
+  - **Naming:** The file **must** be named  `context_shapes.jsonld`.
+
+> **Note:**  
+> - The validation buttons in the documentation examples will not work unless both files are present and named as above.
+> - The system automatically selects the appropriate shapes file based on the example's format (Turtle or JSON-LD).
+
+**Summary Table:**
+
+| Example Format | Required SHACL File         | File Name                | Location                                 |
+|:--------------:|:---------------------------|:------------------------|:-----------------------------------------|
+| Turtle         | Ontology SHACL shapes      | `ontology_shapes.ttl`   | `respec_resources/assets/shacl/`         |
+| JSON-LD        | Context SHACL shapes       | `context_shapes.jsonld` | `respec_resources/assets/shacl/`         |
+
+If you rename or omit these files, validation will fail and users will see an error message.
+
+
+
 
 **Validation Report Format**:
 ```
-VALIDATION SUCCESSFUL
+Validation Result - SUCCESS
+PREFIX vs:             
+PREFIX wdrs:           
+PREFIX wdsr:           
+PREFIX xhv:            
+PREFIX xml:            
+PREFIX xsd:            
 
-Service: ITB
-Content Type: TURTLE
-Timestamp: 12/30/2024, 3:45:12 PM
-
-WARNINGS (1):
-1. No @prefix declarations found
-   Focus: document
-
-The RDF content is valid according to the SHACL shapes.
-SHACL shapes used: ./assets/shacl/ontology_shapes.ttl
+[ rdf:type     sh:ValidationReport;
+  sh:conforms  true
+] .
 ```
+You can add interactive examples anywhere in your documentation by inserting a `<div>` element with the class `h3 examples`. The `id` attribute of this `<div>` should match the file name (without extension) of your example. For example, to include an example from `example1.ttl` and `example1.jsonld`, use:
 
 Example in your template:
 ```jinja2
-<div class="example" id="example1">
-    <div class="example-title marker">Example 1: Person Data</div>
-    <!-- Content from assets/examples/person.jsonld will be loaded here -->
-</div>
+       <div class="h3 examples" id="example1">Example 1</div>
 ```
 
 ### Metadata Configuration
