@@ -3,9 +3,9 @@ on:
   push:
     branches:
       - "**"
-    # paths:
-    #   - "implementation/demo_ontology/xmi_conceptual_model/demo_ontology_CM.xml"
-    #   - "implementation/demo_ontology_module/xmi_conceptual_model/demo_ontology_module_CM.xml"
+    paths:
+      - "implementation/demo_ontology/xmi_conceptual_model/demo_ontology_CM.xml"
+      - "implementation/demo_ontology_module/xmi_conceptual_model/demo_ontology_module_CM.xml"
 
 permissions:
   contents: write
@@ -356,23 +356,23 @@ jobs:
             CM_FILE_PATH=$(echo "implementation/$implementation/xmi_conceptual_model/${CM_FILE_NAME}")
             NS_XML_FILE_PATH="../implementation/${implementation}/model2owl-config/namespaces.xml"
             OUTPUT_PATH_RESPEC=$(echo "implementation/$implementation/respec/")
-            
-            # Paths to existing artifacts from previous jobs
-            OWL_CORE_PATH=$(echo "implementation/$implementation/owl_ontology/${implementation}_CM.rdf")
-            OWL_RESTR_PATH=$(echo "implementation/$implementation/owl_ontology/${implementation}_CM_restrictions.rdf")
-            SHACL_SHAPES_PATH=$(echo "implementation/$implementation/shacl_shapes/${implementation}_CM_shapes.rdf")
-            JSONLD_CONTEXT_PATH=$(echo "implementation/$implementation/jsonld_context/${implementation}_CM_context.jsonld")
             RESPEC_ASSETS_PATH="../implementation/${implementation}/respec_resources/assets"
-            METADATA_JSON_PATH="../implementation/${implementation}/model2owl-config/metadata.json"
+            MODULE_DIR=$(realpath "implementation/${implementation}")
+            METADATA_JSON_PATH="$MODULE_DIR/model2owl-config/metadata.json"
 
             ls -la implementation/$implementation/xmi_conceptual_model/
             echo "CM_FILE_PATH is $CM_FILE_PATH"
             echo "NS_XML_FILE_PATH is $NS_XML_FILE_PATH"
             echo "OUTPUT_PATH_RESPEC is $OUTPUT_PATH_RESPEC"
-            echo "OWL_CORE_PATH is $OWL_CORE_PATH"
-            echo "OWL_RESTR_PATH is $OWL_RESTR_PATH"
-            echo "SHACL_SHAPES_PATH is $SHACL_SHAPES_PATH"
-            echo "JSONLD_CONTEXT_PATH is $JSONLD_CONTEXT_PATH"
+
+            # Update all relative paths in metadata.json so that they are absolute paths
+            ALTERED_METADATA_JSON_PATH=$(mktemp --suffix=".json")
+            cp $METADATA_JSON_PATH $ALTERED_METADATA_JSON_PATH
+            jq --arg moduleDir "$MODULE_DIR" '
+              .metadata.projectLocalResources |= map(
+                .path = ($moduleDir + "/" + .path)
+              )
+            ' $METADATA_JSON_PATH > $ALTERED_METADATA_JSON_PATH
 
             mkdir -p $OUTPUT_PATH_RESPEC
             cd model2owl
@@ -431,11 +431,7 @@ jobs:
               OUTPUT_FOLDER_PATH=../$OUTPUT_PATH_RESPEC \
               RESPEC_INPUT_ASSETS_DIR=${RESPEC_ASSETS_PATH} \
               RESPEC_DATA_JSON_PATH=../$OUTPUT_PATH_RESPEC/${implementation}_CM_respec.json \
-              RESPEC_METADATA_JSON_PATH=${METADATA_JSON_PATH} \
-              OWL_CORE_FILE_PATH=../$OWL_CORE_PATH \
-              OWL_RESTR_FILE_PATH=../$OWL_RESTR_PATH \
-              SHACL_SHAPES_FILE_PATH=../$SHACL_SHAPES_PATH \
-              JSONLD_CONTEXT_FILE_PATH=../$JSONLD_CONTEXT_PATH \
+              RESPEC_METADATA_JSON_PATH=${ALTERED_METADATA_JSON_PATH} \
               NAMESPACES_USER_XML_FILE_PATH=${NS_XML_FILE_PATH}
             
             echo "+++++++++++++++++override JS files after ReSpec generation++++++++++++++++++++++++++++"

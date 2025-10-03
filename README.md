@@ -182,8 +182,11 @@ This file contains metadata information used for generating documentation, conve
 
 
 **Notes:**
-- This file is used all model2owl artefactrs including ReSpec documentation generation
-- Custom metadata sections allow you to add additional documentation links and information
+- This file is used by all model2owl artefacts including ReSpec documentation generation
+- The custom metadata (`customMetadata`) section allow you to add additional documentation links and information
+- The `customMetadata.metadataSectionProperties` property can be used to introduce any custom metadata needed by the user to be available in the [main](./implementation/demo_ontology/respec_resources/templates/main.j2) template
+- The `metadata.projectLocalResources` property allows to define project files available in the repository that should be displayed in the _Project resources_ section of the generated ReSpec documentation
+- The `metadata.projectLocalResources.path` property must specify a path **relative to the module** that contains the configuration file. For instance, in the demo_ontology module, when editing `implementation/demo_ontology/model2owl-config/metadata.json`, the `OWL core resource` is referenced as `owl_ontology/demo_ontology_CM.rdf`. Additional examples can be found in the [metadata.json](./implementation/demo_ontology/model2owl-config/metadata.json) file.
 
 
 ## Adjust GitHub actions
@@ -311,7 +314,7 @@ The foundation template that provides:
 - Standard macros and functions
 
 > **Note:** The `base.j2` template is provided by Model2OWL and contains the core functionality. 
-> For detailed information about available variables and macros, see the [Model2OWL ReSpec Documentation](https://model2owl.readthedocs.io/en/latest/respec-templates/).
+> For detailed information about available variables and macros, see the [Model2OWL ReSpec Documentation](https://docs.ted.europa.eu/M2O/latest/user-guide/respec-documentation.html).
 
 #### Main Template (`main.j2`)
 Your customizable template that **extends** `base.j2`:
