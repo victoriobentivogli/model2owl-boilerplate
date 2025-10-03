@@ -25,6 +25,7 @@ implementation
         |___firstModel
                 |___model2owl-config
                 |___xmi_conceptual_model
+                |___respec_resources
 ```
 ## Adding a UML model
 * Create a folder under implementation with the name of the UML model following the naming conventions. 
@@ -144,6 +145,50 @@ If this in not necessary leave the default file.
     </mapping>
 </mappings>
 ```
+#### Metadata File (metadata.json)
+
+This file contains metadata information used for generating documentation, convention report, and ReSpec documentation. It defines titles, descriptions, versioning, contributors, and other publication details for the ontology.
+
+**Sample:**
+
+```json
+{
+    "metadata": {
+        "conventionReportAuthor": "Your Organization",
+        "conventionReportUMLModelName": "Your Ontology Name",
+        "ontologyTitleCore": "Your Ontology Core",
+        "feedbackUrl": "https://github.com/your-org/your-ontology/issues",
+        "license": "CC BY 4.0",
+        "repositoryUrl": "https://github.com/your-org/your-ontology",
+        "status": "Draft",
+        "title": "Your Ontology Documentation"
+    },
+    "customMetadata": {
+        "metadataSectionProperties": [
+            {
+                "key": "Related documentation",
+                "data": [
+                    {
+                        "value": "User Guide",
+                        "href": "https://your-organization.org/user-guide"
+                    }
+                ]
+            }
+        ]
+    }
+}
+```
+
+
+
+**Notes:**
+- This file is used by all model2owl artefacts including ReSpec documentation generation
+- The custom metadata (`customMetadata`) section allow you to add additional documentation links and information
+- The `customMetadata.metadataSectionProperties` property can be used to introduce any custom metadata needed by the user to be available in the [main](./implementation/demo_ontology/respec_resources/templates/main.j2) template
+- The `metadata.projectLocalResources` property allows to define project files available in the repository that should be displayed in the _Project resources_ section of the generated ReSpec documentation
+- The `metadata.projectLocalResources.path` property must specify a path **relative to the module** that contains the configuration file. For instance, in the demo_ontology module, when editing `implementation/demo_ontology/model2owl-config/metadata.json`, the `OWL core resource` is referenced as `owl_ontology/demo_ontology_CM.rdf`. Additional examples can be found in the [metadata.json](./implementation/demo_ontology/model2owl-config/metadata.json) file.
+
+
 ## Adjust GitHub actions
 In the folder .GitHub from this repository there is one action script that will transform the UML model/models.
 ### Transform with model2owl
@@ -222,3 +267,191 @@ below.
                 |___xmi_conceptual_model
         |___modelTwo
 ```
+
+## ReSpec Documentation Generation
+
+The workflow also generates **ReSpec documentation** - a comprehensive HTML documentation package that includes your ontology artifacts and examples. This section explains how to customize and work with ReSpec resources.
+
+### Understanding ReSpec Directories
+
+It's important to distinguish between the **input** and **output** directories:
+
+- **`respec_resources/`** (input directory): Contains your customization files, templates, and assets
+- **`respec/`** (output directory): Contains the generated HTML documentation package
+
+### ReSpec Resources Structure
+
+To customize your ReSpec documentation, create a `respec_resources` folder in your implementation directory:
+
+```
+implementation
+    |___yourModel
+            |___respec_resources          <- INPUT directory (your customizations)
+            |       |___templates
+            |       |       |___main.j2           <- Your main template (extends base.j2)
+            |       |       |___appendix.j2       <- Optional appendix template
+            |       |       |___main-demo.j2      <- Optional demo template
+            |       |___assets
+            |               |___img               <- Images for your documentation
+            |               |___examples          <- Example files (JSON-LD, TTL, etc.)
+            |                       |___example1.jsonld
+            |                       |___example2.ttl
+            |___respec                    <- OUTPUT directory (generated documentation)
+                    |___index.html        <- Final HTML documentation
+                    |___sds               <- Semantic artifacts (OWL, SHACL, JSON-LD)
+                    |___assets            <- Copied assets and examples
+```
+
+### Template System
+
+ReSpec uses **Jinja2 templating** with a hierarchical template structure:
+
+#### Base Template (`base.j2`)
+The foundation template that provides:
+- HTML structure and metadata
+- CSS and JavaScript includes  
+- Navigation and layout
+- Standard macros and functions
+
+> **Note:** The `base.j2` template is provided by Model2OWL and contains the core functionality. 
+> For detailed information about available variables and macros, see the [Model2OWL ReSpec Documentation](https://docs.ted.europa.eu/M2O/latest/user-guide/respec-documentation.html).
+
+#### Main Template (`main.j2`)
+Your customizable template that **extends** `base.j2`:
+
+```jinja2
+{% extends "base.j2" %}
+
+{% block content %}
+<section id="introduction">
+    <h2>Introduction</h2>
+    <p>Your custom content here...</p>
+    
+    <!-- Include examples -->
+    <div class="example" id="example1">
+        <div class="example-title marker">Example 1: Basic Usage</div>
+        <!-- Example content will be loaded from assets/examples/ -->
+    </div>
+</section>
+{% endblock %}
+```
+
+### Customizing Your Documentation
+
+#### 1. Start with the Example
+Copy the `respec_resources` folder from an existing implementation (like `demo_ontology`) as your starting point:
+
+```bash
+cp -r ./respec_resources_example implementation/yourModel/
+```
+
+#### 2. Edit the Main Template
+Modify `respec_resources/templates/main.j2` to:
+- Add your custom sections and content
+- Include examples using the example system
+- Customize the documentation structure
+
+#### 3. Add Assets and Examples
+Place your assets in `respec_resources/assets/`:
+- **Images**: `assets/img/` - Screenshots, diagrams, logos
+- **Examples**: `assets/examples/` - JSON-LD, Turtle, XML examples that demonstrate your ontology usage
+- **SHACL Shapes**: `assets/shacl/` - SHACL validation shapes files (automatically copied from generated artifacts)
+  - `ontology_shapes.ttl` - Main ontology SHACL shapes (Turtle format, universal name)
+  - `ontology_shapes.jsonld` - JSON-LD context validation shapes (JSON-LD format, following DCAT-AP approach)
+
+#### 4. Example Integration
+The ReSpec system automatically processes files in `assets/examples/`:
+  - Files are made available in the final documentation
+  - JavaScript automatically creates tabbed interfaces for examples with:
+    - **Copy** button allow users to copy examples to clipboard
+    - **Validate** button perform comprehensive SHACL validation with detailed reports
+        - **SHACL Validation**: Uses ITB (Interoperability Testbed) validation service
+        - **Reports**: 
+            - **Success Reports**: Shows validation success with warnings if any
+            - **Failure Reports**: Detailed violation reports with focus nodes and paths
+    - **Open in Playground** button opens JSON-LD examples in the JSON-LD Playground
+
+
+
+#### Mandatory SHACL Shapes Files for Validation
+
+To enable the **Validate** functionality for your examples, you must provide two SHACL shapes files with the exact names as specified below. These files are required for the validation service to work correctly:
+
+- **`ontology_shapes.ttl`**  
+  - **Purpose:** Used for validating Turtle (RDF) examples.
+  - **Location:** Place this file in `respec_resources/assets/shacl/`.
+  - **Naming:** The file **must** be named  `ontology_shapes.ttl`.
+
+- **`ontology_shapes.jsonld`**  
+  - **Purpose:** Used for validating JSON-LD examples.
+  - **Location:** Place this file in `respec_resources/assets/shacl/`.
+  - **Naming:** The file **must** be named  `ontology_shapes.jsonld`.
+
+> **Note:**  
+> - The validation buttons in the documentation examples will not work unless both files are present and named as above.
+> - The system automatically selects the appropriate shapes file based on the example's format (Turtle or JSON-LD).
+
+**Summary Table:**
+
+| Example Format | Required SHACL File         | File Name                | Location                                 |
+|:--------------:|:---------------------------|:------------------------|:-----------------------------------------|
+| Turtle         | Ontology SHACL shapes      | `ontology_shapes.ttl`   | `respec_resources/assets/shacl/`         |
+| JSON-LD        | Ontology SHACL shapes       | `ontology_shapes.jsonld` | `respec_resources/assets/shacl/`         |
+
+If you rename or omit these files, validation will fail and users will see an error message.
+
+
+
+
+**Validation Report Format**:
+```
+Validation Result - SUCCESS
+PREFIX vs:             
+PREFIX wdrs:           
+PREFIX wdsr:           
+PREFIX xhv:            
+PREFIX xml:            
+PREFIX xsd:            
+
+[ rdf:type     sh:ValidationReport;
+  sh:conforms  true
+] .
+```
+You can add interactive examples anywhere in your documentation by inserting a `<div>` element with the class `h3 examples`. The `id` attribute of this `<div>` should match the file name (without extension) of your example. For example, to include an example from `example1.ttl` and `example1.jsonld`, use:
+
+Example in your template:
+```jinja2
+       <div class="h3 examples" id="example1">Example 1</div>
+```
+
+### Metadata Configuration
+
+ReSpec documentation uses metadata from `model2owl-config/metadata.json`:
+
+```json
+{
+    "title": "Your Ontology Documentation",
+    "description": "Comprehensive documentation for your ontology",
+    "version": "1.0.0",
+    "authors": [
+        {"name": "Your Name", "email": "your.email@example.com"}
+    ]
+}
+```
+
+### Generated Output
+
+The workflow generates a complete documentation package in the `respec/` directory:
+- **`index.html`**: Main documentation page
+- **`sds/`**: All semantic artifacts (OWL, SHACL, JSON-LD context files)
+- **`assets/`**: Your images and examples
+- **Static resources**: CSS, JavaScript for functionality
+
+### GitHub Pages Integration
+
+The generated ReSpec documentation is automatically published to GitHub Pages, creating a documentation website for your ontology that includes:
+- Interactive examples
+- Downloadable artifacts
+- Search functionality
+
+
