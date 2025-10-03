@@ -357,7 +357,7 @@ Place your assets in `respec_resources/assets/`:
 - **Examples**: `assets/examples/` - JSON-LD, Turtle, XML examples that demonstrate your ontology usage
 - **SHACL Shapes**: `assets/shacl/` - SHACL validation shapes files (automatically copied from generated artifacts)
   - `ontology_shapes.ttl` - Main ontology SHACL shapes (Turtle format, universal name)
-  - `context_shapes.jsonld` - JSON-LD context validation shapes (JSON-LD format, following DCAT-AP approach)
+  - `ontology_shapes.jsonld` - JSON-LD context validation shapes (JSON-LD format, following DCAT-AP approach)
 
 #### 4. Example Integration
 The ReSpec system automatically processes files in `assets/examples/`:
@@ -382,10 +382,10 @@ To enable the **Validate** functionality for your examples, you must provide two
   - **Location:** Place this file in `respec_resources/assets/shacl/`.
   - **Naming:** The file **must** be named  `ontology_shapes.ttl`.
 
-- **`context_shapes.jsonld`**  
+- **`ontology_shapes.jsonld`**  
   - **Purpose:** Used for validating JSON-LD examples.
   - **Location:** Place this file in `respec_resources/assets/shacl/`.
-  - **Naming:** The file **must** be named  `context_shapes.jsonld`.
+  - **Naming:** The file **must** be named  `ontology_shapes.jsonld`.
 
 > **Note:**  
 > - The validation buttons in the documentation examples will not work unless both files are present and named as above.
@@ -396,7 +396,7 @@ To enable the **Validate** functionality for your examples, you must provide two
 | Example Format | Required SHACL File         | File Name                | Location                                 |
 |:--------------:|:---------------------------|:------------------------|:-----------------------------------------|
 | Turtle         | Ontology SHACL shapes      | `ontology_shapes.ttl`   | `respec_resources/assets/shacl/`         |
-| JSON-LD        | Context SHACL shapes       | `context_shapes.jsonld` | `respec_resources/assets/shacl/`         |
+| JSON-LD        | Ontology SHACL shapes       | `ontology_shapes.jsonld` | `respec_resources/assets/shacl/`         |
 
 If you rename or omit these files, validation will fail and users will see an error message.
 
