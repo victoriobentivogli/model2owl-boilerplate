@@ -92,12 +92,32 @@
     <xsl:variable name="generateReusedConceptsGlossary" select="fn:true()"/>
     <xsl:variable name="generateReusedConceptsJSONLDcontext" select="fn:true()"/>
 
-<!--    This set of variables controls generation of comments and how they will generate in the output -->
+    <!--    This set of variables controls generation of comments and how they will generate in the output -->
     <xsl:variable name="commentsGeneration" select="fn:true()"/>
     <xsl:variable name="commentProperty" select="'skos:editorialNote'"/>
 
      <!--    Tag names/keys that are excluded from output -->
     <xsl:variable name="excludedTagNamesList" select="($statusProperty, $cvConstraintLevelProperty)"/>
+
+    <!-- Tag name/key that is used to describe a usage note of a class or property-->
+    <xsl:variable name="usageNoteTagName" select="'skos:note'"/>
+
+    <!-- Tag name/key that is used to indicate if a property is mandatory or
+         optional. If the tag is missing then cardinality will be used to
+         determine if a property is mandatory or optional-->
+    <xsl:variable name="mandatoryStatusTagName" select="'cfg:usage'"/>
+
+    <!-- Tag name/key that is used to provide reference links/reuse information for a class or property-->
+    <xsl:variable name="referenceTagName" select="'dcterms:references'"/>
+    <!-- Label that will be used in the ReSpec docs to describe values of `referenceTagName` for properties -->
+    <xsl:variable name="propertyReferenceRespecLabel" select="'Reuse'"/>
+    <!-- Label that will be used in the ReSpec docs to describe values of `referenceTagName` for classes -->
+    <xsl:variable name="classReferenceRespecLabel" select="'Reference'"/>
+    <!-- A flag to control whether references/reuse information is shown in the ReSpec docs -->
+    <xsl:variable name="showReferencesInRespec" select="fn:true()"/>
+
+    <!-- Tag name/key that is used as custom label for terms in the ReSpec documentation-->
+    <xsl:variable name="customTermLabelTagName" select="'skos:prefLabel'"/>
 
     <!-- Variables for status filtering:
      - The property used to indicate the status
