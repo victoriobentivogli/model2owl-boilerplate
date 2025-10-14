@@ -1,6 +1,7 @@
 @prefix : <http://data.europa.eu/a4g/ontology#> .
 @prefix adms: <http://www.w3.org/ns/adms#> .
 @prefix cccev: <http://data.europa.eu/m8g/> .
+@prefix cfg: <http://www.example.org#> .
 @prefix dcterms: <http://purl.org/dc/terms/> .
 @prefix eli: <http://data.europa.eu/eli/ontology#> .
 @prefix foaf: <http://xmlns.com/foaf/0.1/> .
@@ -2819,10 +2820,13 @@
     skos:prefLabel "has Reception Date"@en .
 
 :hasRecurrenceDescription a owl:DatatypeProperty ;
+    dcterms:references "<a href=\"https://example.com/link1\">Link 1</a>"@en ;
+    cfg:usage "Recommended"@en ;
     rdfs:isDefinedBy :core ;
     skos:definition "Any additional information about the recurrence of the Procurement. Additional Information: For example estimated timing of the Procedure. (epo:ProcurementObject)"@en ;
     skos:editorialNote "Used by eForms BT-95"@en ;
     skos:historyNote "WG Approval 16/01/2019"@en ;
+    skos:note "Provides a concise, human-readable description of the legal basis (statute, regulation, or contractual provision) that justifies an entity's obligations or permissions, and include a reference identifier."@en ;
     skos:prefLabel "has Recurrence Description"@en .
 
 :hasReferenceURI a owl:DatatypeProperty ;
@@ -3442,6 +3446,7 @@
     skos:prefLabel "is Procurement Document Restricted"@en .
 
 :isRecurrent a owl:DatatypeProperty ;
+    dcterms:references "<a href=\"https://example.com/link1\">Link 1</a>, <a href=\"https://example.com/link2\">Link 2</a>"@en ;
     rdfs:isDefinedBy :core ;
     skos:definition "The Procurement being notified is likely to be included in another procedure in the foreseeable future. Additional Information: For example, a regularly re-tendered municipal service. This does not include awarding multiple contracts within a single qualification system, framework agreement, or a dynamic purchasing system. (epo:ProcurementObject)"@en ;
     skos:editorialNote "Used by eForms BT-94"@en ;
@@ -4287,11 +4292,14 @@ foaf:Person a owl:Class ;
     skos:prefLabel "Evaluation Term"@en .
 
 :ProcurementObject a owl:Class ;
+    dcterms:references "<a href=\"https://example.com/link1\">Link</a>"@en ;
     rdfs:isDefinedBy :core ;
     rdfs:subClassOf :MaskableObject,
         :ProcurementElement ;
     skos:definition "The whole or a division of goods, services or works to be procured. Additional Information: Anything that can specify the procurement content (i.e. goods, services, work) is a Procurement Object. In a sense, such an \"object\" can constitute the \"object of a Contract\". To test whether something is a Procedure Object check if it can have a Purpose and/or CPV classification (<i>The CPV establishes a single classification system for public procurement aimed at standardising the references used by Contracting Authorities and entities to describe the subject of Procurement Contracts.</i>). Note: Procedure, seems to be an exception from this rule. Because it is a conflated term: it carries process properties and \"purpose\" properties."@en ;
-    skos:prefLabel "Procurement Object"@en .
+    skos:note "This class should be used to represent the whole or a part of goods, services, or works intended for procurement. Each instance can be linked to a Purpose or a CPV classification to specify its content, facilitating standardization and clarity in procurement documentation."@en ;
+    skos:prefLabel "Procurement Object"@en,
+        "Procurement object (custom label)"@en .
 
 :QualificationCriteriaSummary a owl:Class ;
     rdfs:isDefinedBy :core ;
