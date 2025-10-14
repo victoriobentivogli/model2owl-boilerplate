@@ -654,7 +654,7 @@
                 <a href="#Procurementcriterion">Procurement criterion</a> |
                 <a href="#Procurementdocument">Procurement document</a> |
                 <a href="#Procurementelement">Procurement element</a> |
-                <a href="#Procurementobject">Procurement object</a> |
+                <a href="#Procurementobject%28customlabel%29">Procurement object (custom label)</a> |
                 <a href="#Procurementprocedureinformationprovider">Procurement procedure information provider</a> |
                 <a href="#Procurementprocessinformation">Procurement process information</a> |
                 <a href="#Procurementserviceprovider">Procurement service provider</a> |
@@ -8172,7 +8172,8 @@
                                     
                                 </td>
                                 <td>
-                                    
+                                    Indicates the specific lot or batch that an entity refers to, and provide additional context using external references when relevant, for example: <a href="https://example.com/lot123">Lot 123 details</a> or <a href="https://example.com/lot456">Lot 456 overview</a>
+
                                 </td>
                                 
                                 <td>
@@ -16723,7 +16724,7 @@
                 <dt>
                     Subclass of
                 </dt>
-                <dd> <a href="http://data.europa.eu/a4g/ontology#ProcurementObject">Procurement object</a>
+                <dd> <a href="http://data.europa.eu/a4g/ontology#ProcurementObject">Procurement object (custom label)</a>
                     
                 </dd>
             
@@ -23869,7 +23870,7 @@
                 <dt>
                     Subclass of
                 </dt>
-                <dd> <a href="http://data.europa.eu/a4g/ontology#ProcurementObject">Procurement object</a>
+                <dd> <a href="http://data.europa.eu/a4g/ontology#ProcurementObject">Procurement object (custom label)</a>
                     
                 </dd>
             
@@ -27449,11 +27450,11 @@
             
                 
     <section>
-        <h3 id="Procurementobject">
+        <h3 id="Procurementobject%28customlabel%29">
             <a href="http://data.europa.eu/a4g/ontology#ProcurementObject"
                 data-toggle="tooltip"
                 data-content="http://data.europa.eu/a4g/ontology#ProcurementObject"
-                data-placement="right">Procurement object</a>
+                data-placement="right">Procurement object (custom label)</a>
 
         </h3>
         <span style="float:right;margin-right:10px;">
@@ -27466,7 +27467,7 @@
             
         
 
-        <a href="https://github.com/OP-TED/ePO/issues/new?title=Issue%20for%20'Procurement object'&body=Explain%20your%20issue%20for%20https://OP-TED.github.io/ePO/releases/5.0.0/%23Procurementobject" target="_blank" rel="noopener noreferrer" >
+        <a href="https://github.com/OP-TED/ePO/issues/new?title=Issue%20for%20'Procurement object (custom label)'&body=Explain%20your%20issue%20for%20https://OP-TED.github.io/ePO/releases/5.0.0/%23Procurementobject%28customlabel%29" target="_blank" rel="noopener noreferrer" >
             <img src="./assets/img/callout.png" loading="lazy" alt="[o]" title="Report an issue or share feedback" class="feedbackButton"/>
         </a>
     
@@ -27480,6 +27481,13 @@
                 The whole or a division of goods, services or works to be procured.Additional Information:Anything that can specify the procurement content (i.e. goods, services, work) is a Procurement Object. In a sense, such an "object" can constitute the "object of a Contract".To test whether something is a Procedure Object check if it can have a Purpose and/or CPV classification (<i>The CPV establishes a single classification system for public procurement aimed at standardising the references used by Contracting Authorities and entities to describe the subject of Procurement Contracts.</i>).Note:Procedure, seems to be an exception from this rule. Because it is a conflated term: it carries process properties and "purpose" properties.
             </dd>
             
+                <dt>
+                    Usage Note
+                </dt>
+                <dd>
+                    This class should be used to represent the whole or a part of goods, services, or works intended for procurement. Each instance can be linked to a Purpose or a CPV classification to specify its content, facilitating standardization and clarity in procurement documentation.
+                </dd>
+            
             
                 <dt>
                     Subclass of
@@ -27490,6 +27498,13 @@
                 </dd>
             
             
+                <dt>
+                    Reference
+                </dt>
+                <dd>
+                    <a href="https://example.com/link1">Link</a>
+                </dd>
+            
             <dt>
                 Properties
             </dt>
@@ -27498,28 +27513,28 @@
                     For this entity the following properties are defined:
                         
                         
-                        <a href="#Procurementobject.foreseesconcession">foresees concession</a>,
+                        <a href="#Procurementobject%28customlabel%29.foreseesconcession">foresees concession</a>,
                         
                         
-                        <a href="#Procurementobject.fulfillsstrategicprocurement">fulfills strategic procurement</a>,
+                        <a href="#Procurementobject%28customlabel%29.fulfillsstrategicprocurement">fulfills strategic procurement</a>,
                         
                         
-                        <a href="#Procurementobject.haslaunchframeworkagreementmaximumvalue">has launch framework agreement maximum value</a>,
+                        <a href="#Procurementobject%28customlabel%29.haslaunchframeworkagreementmaximumvalue">has launch framework agreement maximum value</a>,
                         
                         
-                        <a href="#Procurementobject.hasrecurrencedescription">has recurrence description</a>,
+                        <a href="#Procurementobject%28customlabel%29.hasrecurrencedescription">has recurrence description</a>,
                         
                         
-                        <a href="#Procurementobject.isfundedby">is funded by</a>,
+                        <a href="#Procurementobject%28customlabel%29.isfundedby">is funded by</a>,
                         
                         
-                        <a href="#Procurementobject.isrecurrent">is recurrent</a>,
+                        <a href="#Procurementobject%28customlabel%29.isrecurrent">is recurrent</a>,
                         
                         
-                        <a href="#Procurementobject.isusingeufunds">is using EU funds</a>,
+                        <a href="#Procurementobject%28customlabel%29.isusingeufunds">is using EU funds</a>,
                         
                         
-                        <a href="#Procurementobject.usestechnique">uses technique</a>.
+                        <a href="#Procurementobject%28customlabel%29.usestechnique">uses technique</a>.
                 </dd>
             
         </dl>
@@ -27557,7 +27572,7 @@
                     </thead>
                     <tbody class="supertype">
                         
-                            <tr id="Procurementobject.foreseesconcession"
+                            <tr id="Procurementobject%28customlabel%29.foreseesconcession"
                                 typeof="rdf:Property"
                                 resource="http://data.europa.eu/a4g/ontology#foreseesConcession"
                                 class="class mandatory">
@@ -27606,7 +27621,7 @@
        
             
 
-        <a href="https://github.com/OP-TED/ePO/issues/new?title=Issue%20for%20'Foresees concession'%20in%20'Procurement object'&body=Explain%20your%20issue%20for%20https://OP-TED.github.io/ePO/releases/5.0.0/%23Procurementobject.foreseesconcession" target="_blank" rel="noopener noreferrer" >
+        <a href="https://github.com/OP-TED/ePO/issues/new?title=Issue%20for%20'Foresees concession'%20in%20'Procurement object (custom label)'&body=Explain%20your%20issue%20for%20https://OP-TED.github.io/ePO/releases/5.0.0/%23Procurementobject%28customlabel%29.foreseesconcession" target="_blank" rel="noopener noreferrer" >
             <img src="./assets/img/callout.png" loading="lazy" alt="[o]" title="Report an issue or share feedback" class="feedbackButton"/>
         </a>
     
@@ -27614,7 +27629,7 @@
                                 </td>
                             </tr>
                         
-                            <tr id="Procurementobject.fulfillsstrategicprocurement"
+                            <tr id="Procurementobject%28customlabel%29.fulfillsstrategicprocurement"
                                 typeof="rdf:Property"
                                 resource="http://data.europa.eu/a4g/ontology#fulfillsStrategicProcurement"
                                 class="class mandatory">
@@ -27663,7 +27678,7 @@
        
             
 
-        <a href="https://github.com/OP-TED/ePO/issues/new?title=Issue%20for%20'Fulfills strategic procurement'%20in%20'Procurement object'&body=Explain%20your%20issue%20for%20https://OP-TED.github.io/ePO/releases/5.0.0/%23Procurementobject.fulfillsstrategicprocurement" target="_blank" rel="noopener noreferrer" >
+        <a href="https://github.com/OP-TED/ePO/issues/new?title=Issue%20for%20'Fulfills strategic procurement'%20in%20'Procurement object (custom label)'&body=Explain%20your%20issue%20for%20https://OP-TED.github.io/ePO/releases/5.0.0/%23Procurementobject%28customlabel%29.fulfillsstrategicprocurement" target="_blank" rel="noopener noreferrer" >
             <img src="./assets/img/callout.png" loading="lazy" alt="[o]" title="Report an issue or share feedback" class="feedbackButton"/>
         </a>
     
@@ -27671,7 +27686,7 @@
                                 </td>
                             </tr>
                         
-                            <tr id="Procurementobject.haslaunchframeworkagreementmaximumvalue"
+                            <tr id="Procurementobject%28customlabel%29.haslaunchframeworkagreementmaximumvalue"
                                 typeof="rdf:Property"
                                 resource="http://data.europa.eu/a4g/ontology#hasLaunchFrameworkAgreementMaximumValue"
                                 class="class mandatory">
@@ -27720,7 +27735,7 @@
        
             
 
-        <a href="https://github.com/OP-TED/ePO/issues/new?title=Issue%20for%20'Has launch framework agreement maximum value'%20in%20'Procurement object'&body=Explain%20your%20issue%20for%20https://OP-TED.github.io/ePO/releases/5.0.0/%23Procurementobject.haslaunchframeworkagreementmaximumvalue" target="_blank" rel="noopener noreferrer" >
+        <a href="https://github.com/OP-TED/ePO/issues/new?title=Issue%20for%20'Has launch framework agreement maximum value'%20in%20'Procurement object (custom label)'&body=Explain%20your%20issue%20for%20https://OP-TED.github.io/ePO/releases/5.0.0/%23Procurementobject%28customlabel%29.haslaunchframeworkagreementmaximumvalue" target="_blank" rel="noopener noreferrer" >
             <img src="./assets/img/callout.png" loading="lazy" alt="[o]" title="Report an issue or share feedback" class="feedbackButton"/>
         </a>
     
@@ -27728,7 +27743,7 @@
                                 </td>
                             </tr>
                         
-                            <tr id="Procurementobject.hasrecurrencedescription"
+                            <tr id="Procurementobject%28customlabel%29.hasrecurrencedescription"
                                 typeof="rdf:Property"
                                 resource="http://data.europa.eu/a4g/ontology#hasRecurrenceDescription"
                                 class="class mandatory">
@@ -27758,11 +27773,11 @@
                                     Any additional information about the recurrence of the Procurement.Additional Information:For example estimated timing of the Procedure.
                                 </td>
                                 <td>
-                                    
+                                    Provides a concise, human-readable description of the legal basis (statute, regulation, or contractual provision) that justifies an entity's obligations or permissions, and include a reference identifier.
                                 </td>
                                 
                                 <td>
-                                    
+                                    <a href="https://example.com/link1">Link 1</a>
                                 </td>
                                 
                                 <td>
@@ -27777,7 +27792,7 @@
        
             
 
-        <a href="https://github.com/OP-TED/ePO/issues/new?title=Issue%20for%20'Has recurrence description'%20in%20'Procurement object'&body=Explain%20your%20issue%20for%20https://OP-TED.github.io/ePO/releases/5.0.0/%23Procurementobject.hasrecurrencedescription" target="_blank" rel="noopener noreferrer" >
+        <a href="https://github.com/OP-TED/ePO/issues/new?title=Issue%20for%20'Has recurrence description'%20in%20'Procurement object (custom label)'&body=Explain%20your%20issue%20for%20https://OP-TED.github.io/ePO/releases/5.0.0/%23Procurementobject%28customlabel%29.hasrecurrencedescription" target="_blank" rel="noopener noreferrer" >
             <img src="./assets/img/callout.png" loading="lazy" alt="[o]" title="Report an issue or share feedback" class="feedbackButton"/>
         </a>
     
@@ -27785,7 +27800,7 @@
                                 </td>
                             </tr>
                         
-                            <tr id="Procurementobject.isfundedby"
+                            <tr id="Procurementobject%28customlabel%29.isfundedby"
                                 typeof="rdf:Property"
                                 resource="http://data.europa.eu/a4g/ontology#isFundedBy"
                                 class="class mandatory">
@@ -27834,7 +27849,7 @@
        
             
 
-        <a href="https://github.com/OP-TED/ePO/issues/new?title=Issue%20for%20'Is funded by'%20in%20'Procurement object'&body=Explain%20your%20issue%20for%20https://OP-TED.github.io/ePO/releases/5.0.0/%23Procurementobject.isfundedby" target="_blank" rel="noopener noreferrer" >
+        <a href="https://github.com/OP-TED/ePO/issues/new?title=Issue%20for%20'Is funded by'%20in%20'Procurement object (custom label)'&body=Explain%20your%20issue%20for%20https://OP-TED.github.io/ePO/releases/5.0.0/%23Procurementobject%28customlabel%29.isfundedby" target="_blank" rel="noopener noreferrer" >
             <img src="./assets/img/callout.png" loading="lazy" alt="[o]" title="Report an issue or share feedback" class="feedbackButton"/>
         </a>
     
@@ -27842,7 +27857,7 @@
                                 </td>
                             </tr>
                         
-                            <tr id="Procurementobject.isrecurrent"
+                            <tr id="Procurementobject%28customlabel%29.isrecurrent"
                                 typeof="rdf:Property"
                                 resource="http://data.europa.eu/a4g/ontology#isRecurrent"
                                 class="class mandatory">
@@ -27876,7 +27891,7 @@
                                 </td>
                                 
                                 <td>
-                                    
+                                    <a href="https://example.com/link1">Link 1</a>, <a href="https://example.com/link2">Link 2</a>
                                 </td>
                                 
                                 <td>
@@ -27891,7 +27906,7 @@
        
             
 
-        <a href="https://github.com/OP-TED/ePO/issues/new?title=Issue%20for%20'Is recurrent'%20in%20'Procurement object'&body=Explain%20your%20issue%20for%20https://OP-TED.github.io/ePO/releases/5.0.0/%23Procurementobject.isrecurrent" target="_blank" rel="noopener noreferrer" >
+        <a href="https://github.com/OP-TED/ePO/issues/new?title=Issue%20for%20'Is recurrent'%20in%20'Procurement object (custom label)'&body=Explain%20your%20issue%20for%20https://OP-TED.github.io/ePO/releases/5.0.0/%23Procurementobject%28customlabel%29.isrecurrent" target="_blank" rel="noopener noreferrer" >
             <img src="./assets/img/callout.png" loading="lazy" alt="[o]" title="Report an issue or share feedback" class="feedbackButton"/>
         </a>
     
@@ -27899,7 +27914,7 @@
                                 </td>
                             </tr>
                         
-                            <tr id="Procurementobject.isusingeufunds"
+                            <tr id="Procurementobject%28customlabel%29.isusingeufunds"
                                 typeof="rdf:Property"
                                 resource="http://data.europa.eu/a4g/ontology#isUsingEUFunds"
                                 class="class mandatory">
@@ -27948,7 +27963,7 @@
        
             
 
-        <a href="https://github.com/OP-TED/ePO/issues/new?title=Issue%20for%20'Is using EU funds'%20in%20'Procurement object'&body=Explain%20your%20issue%20for%20https://OP-TED.github.io/ePO/releases/5.0.0/%23Procurementobject.isusingeufunds" target="_blank" rel="noopener noreferrer" >
+        <a href="https://github.com/OP-TED/ePO/issues/new?title=Issue%20for%20'Is using EU funds'%20in%20'Procurement object (custom label)'&body=Explain%20your%20issue%20for%20https://OP-TED.github.io/ePO/releases/5.0.0/%23Procurementobject%28customlabel%29.isusingeufunds" target="_blank" rel="noopener noreferrer" >
             <img src="./assets/img/callout.png" loading="lazy" alt="[o]" title="Report an issue or share feedback" class="feedbackButton"/>
         </a>
     
@@ -27956,7 +27971,7 @@
                                 </td>
                             </tr>
                         
-                            <tr id="Procurementobject.usestechnique"
+                            <tr id="Procurementobject%28customlabel%29.usestechnique"
                                 typeof="rdf:Property"
                                 resource="http://data.europa.eu/a4g/ontology#usesTechnique"
                                 class="class mandatory">
@@ -28005,7 +28020,7 @@
        
             
 
-        <a href="https://github.com/OP-TED/ePO/issues/new?title=Issue%20for%20'Uses technique'%20in%20'Procurement object'&body=Explain%20your%20issue%20for%20https://OP-TED.github.io/ePO/releases/5.0.0/%23Procurementobject.usestechnique" target="_blank" rel="noopener noreferrer" >
+        <a href="https://github.com/OP-TED/ePO/issues/new?title=Issue%20for%20'Uses technique'%20in%20'Procurement object (custom label)'&body=Explain%20your%20issue%20for%20https://OP-TED.github.io/ePO/releases/5.0.0/%23Procurementobject%28customlabel%29.usestechnique" target="_blank" rel="noopener noreferrer" >
             <img src="./assets/img/callout.png" loading="lazy" alt="[o]" title="Report an issue or share feedback" class="feedbackButton"/>
         </a>
     
@@ -52555,10 +52570,7 @@
                                 <td>
     
     
-        
-        
-            Optional
-        
+        Recommended
     
 </td>
                                 <td><a href="#Contractlotcompletioninformation.concernslot">concerns lot </a></td>
@@ -58304,7 +58316,7 @@
                             
                             
                             <tr>
-                                <td><a href="#Procurementobject">Procurement object</a></td>
+                                <td><a href="#Procurementobject%28customlabel%29">Procurement object (custom label)</a></td>
                                 <td><div class="compact-uri">http://data.europa.eu/a4g/ontology#ProcurementObject</div></td>
                                 <td>
     
@@ -58315,14 +58327,14 @@
         
     
 </td>
-                                <td><a href="#Procurementobject.foreseesconcession">foresees concession </a></td>
+                                <td><a href="#Procurementobject%28customlabel%29.foreseesconcession">foresees concession </a></td>
                                 <td><div class="compact-uri">http://data.europa.eu/a4g/ontology#foreseesConcession</div></td>
                             </tr>
                         
                             
                             
                             <tr>
-                                <td><a href="#Procurementobject">Procurement object</a></td>
+                                <td><a href="#Procurementobject%28customlabel%29">Procurement object (custom label)</a></td>
                                 <td><div class="compact-uri">http://data.europa.eu/a4g/ontology#ProcurementObject</div></td>
                                 <td>
     
@@ -58333,14 +58345,14 @@
         
     
 </td>
-                                <td><a href="#Procurementobject.fulfillsstrategicprocurement">fulfills strategic procurement </a></td>
+                                <td><a href="#Procurementobject%28customlabel%29.fulfillsstrategicprocurement">fulfills strategic procurement </a></td>
                                 <td><div class="compact-uri">http://data.europa.eu/a4g/ontology#fulfillsStrategicProcurement</div></td>
                             </tr>
                         
                             
                             
                             <tr>
-                                <td><a href="#Procurementobject">Procurement object</a></td>
+                                <td><a href="#Procurementobject%28customlabel%29">Procurement object (custom label)</a></td>
                                 <td><div class="compact-uri">http://data.europa.eu/a4g/ontology#ProcurementObject</div></td>
                                 <td>
     
@@ -58351,32 +58363,29 @@
         
     
 </td>
-                                <td><a href="#Procurementobject.haslaunchframeworkagreementmaximumvalue">has launch framework agreement maximum value </a></td>
+                                <td><a href="#Procurementobject%28customlabel%29.haslaunchframeworkagreementmaximumvalue">has launch framework agreement maximum value </a></td>
                                 <td><div class="compact-uri">http://data.europa.eu/a4g/ontology#hasLaunchFrameworkAgreementMaximumValue</div></td>
                             </tr>
                         
                             
                             
                             <tr>
-                                <td><a href="#Procurementobject">Procurement object</a></td>
+                                <td><a href="#Procurementobject%28customlabel%29">Procurement object (custom label)</a></td>
                                 <td><div class="compact-uri">http://data.europa.eu/a4g/ontology#ProcurementObject</div></td>
                                 <td>
     
     
-        
-        
-            Optional
-        
+        Recommended
     
 </td>
-                                <td><a href="#Procurementobject.hasrecurrencedescription">has recurrence description </a></td>
+                                <td><a href="#Procurementobject%28customlabel%29.hasrecurrencedescription">has recurrence description </a></td>
                                 <td><div class="compact-uri">http://data.europa.eu/a4g/ontology#hasRecurrenceDescription</div></td>
                             </tr>
                         
                             
                             
                             <tr>
-                                <td><a href="#Procurementobject">Procurement object</a></td>
+                                <td><a href="#Procurementobject%28customlabel%29">Procurement object (custom label)</a></td>
                                 <td><div class="compact-uri">http://data.europa.eu/a4g/ontology#ProcurementObject</div></td>
                                 <td>
     
@@ -58387,14 +58396,14 @@
         
     
 </td>
-                                <td><a href="#Procurementobject.isfundedby">is funded by </a></td>
+                                <td><a href="#Procurementobject%28customlabel%29.isfundedby">is funded by </a></td>
                                 <td><div class="compact-uri">http://data.europa.eu/a4g/ontology#isFundedBy</div></td>
                             </tr>
                         
                             
                             
                             <tr>
-                                <td><a href="#Procurementobject">Procurement object</a></td>
+                                <td><a href="#Procurementobject%28customlabel%29">Procurement object (custom label)</a></td>
                                 <td><div class="compact-uri">http://data.europa.eu/a4g/ontology#ProcurementObject</div></td>
                                 <td>
     
@@ -58405,14 +58414,14 @@
         
     
 </td>
-                                <td><a href="#Procurementobject.isrecurrent">is recurrent </a></td>
+                                <td><a href="#Procurementobject%28customlabel%29.isrecurrent">is recurrent </a></td>
                                 <td><div class="compact-uri">http://data.europa.eu/a4g/ontology#isRecurrent</div></td>
                             </tr>
                         
                             
                             
                             <tr>
-                                <td><a href="#Procurementobject">Procurement object</a></td>
+                                <td><a href="#Procurementobject%28customlabel%29">Procurement object (custom label)</a></td>
                                 <td><div class="compact-uri">http://data.europa.eu/a4g/ontology#ProcurementObject</div></td>
                                 <td>
     
@@ -58423,14 +58432,14 @@
         
     
 </td>
-                                <td><a href="#Procurementobject.isusingeufunds">is using EU funds </a></td>
+                                <td><a href="#Procurementobject%28customlabel%29.isusingeufunds">is using EU funds </a></td>
                                 <td><div class="compact-uri">http://data.europa.eu/a4g/ontology#isUsingEUFunds</div></td>
                             </tr>
                         
                             
                             
                             <tr>
-                                <td><a href="#Procurementobject">Procurement object</a></td>
+                                <td><a href="#Procurementobject%28customlabel%29">Procurement object (custom label)</a></td>
                                 <td><div class="compact-uri">http://data.europa.eu/a4g/ontology#ProcurementObject</div></td>
                                 <td>
     
@@ -58441,7 +58450,7 @@
         
     
 </td>
-                                <td><a href="#Procurementobject.usestechnique">uses technique </a></td>
+                                <td><a href="#Procurementobject%28customlabel%29.usestechnique">uses technique </a></td>
                                 <td><div class="compact-uri">http://data.europa.eu/a4g/ontology#usesTechnique</div></td>
                             </tr>
                         

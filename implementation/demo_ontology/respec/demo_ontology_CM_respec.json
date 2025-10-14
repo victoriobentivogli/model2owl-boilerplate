@@ -4402,7 +4402,9 @@
             }
           ],
           "tags": {
-            "epo:status": "implemented"
+            "cfg:usage": "Recommended",
+            "epo:status": "implemented",
+            "skos:note": "Indicates the specific lot or batch that an entity refers to, and provide additional context using external references when relevant, for example: <a href=\"https://example.com/lot123\">Lot 123 details</a> or <a href=\"https://example.com/lot456\">Lot 456 overview</a>\n"
           },
           "uri": "http://data.europa.eu/a4g/ontology#concernsLot",
           "usage": {}
@@ -9996,7 +9998,7 @@
       "parents": [
         {
           "label": {
-            "en": "Procurement object"
+            "en": "Procurement object (custom label)"
           },
           "name": "epo:ProcurementObject",
           "scoped_uri": "http://data.europa.eu/a4g/ontology#ProcurementObject"
@@ -14567,7 +14569,7 @@
       "parents": [
         {
           "label": {
-            "en": "Procurement object"
+            "en": "Procurement object (custom label)"
           },
           "name": "epo:ProcurementObject",
           "scoped_uri": "http://data.europa.eu/a4g/ontology#ProcurementObject"
@@ -16354,7 +16356,7 @@
         "en": "The whole or a division of goods, services or works to be procured.Additional Information:Anything that can specify the procurement content (i.e. goods, services, work) is a Procurement Object. In a sense, such an \"object\" can constitute the \"object of a Contract\".To test whether something is a Procedure Object check if it can have a Purpose and/or CPV classification (<i>The CPV establishes a single classification system for public procurement aimed at standardising the references used by Contracting Authorities and entities to describe the subject of Procurement Contracts.</i>).Note:Procedure, seems to be an exception from this rule. Because it is a conflated term: it carries process properties and \"purpose\" properties."
       },
       "label": {
-        "en": "Procurement object"
+        "en": "Procurement object (custom label)"
       },
       "name": "epo:ProcurementObject",
       "parents": [
@@ -16493,9 +16495,12 @@
             }
           ],
           "tags": {
+            "cfg:usage": "Recommended",
+            "dct:references": "<a href=\"https://example.com/link1\">Link 1</a>",
             "epo:status": "implemented",
             "skos:editorialNote": "Used by eForms BT-95",
-            "skos:historyNote": "WG Approval 16/01/2019"
+            "skos:historyNote": "WG Approval 16/01/2019",
+            "skos:note": "Provides a concise, human-readable description of the legal basis (statute, regulation, or contractual provision) that justifies an entity's obligations or permissions, and include a reference identifier."
           },
           "uri": "http://data.europa.eu/a4g/ontology#hasRecurrenceDescription",
           "usage": {}
@@ -16558,6 +16563,7 @@
             }
           ],
           "tags": {
+            "dct:references": "<a href=\"https://example.com/link1\">Link 1</a>, <a href=\"https://example.com/link2\">Link 2</a>",
             "epo:status": "implemented",
             "skos:editorialNote": "Used by eForms BT-94",
             "skos:historyNote": "WG Approval 12/05/2020"
@@ -16632,7 +16638,10 @@
         "class-usage-scope": "main"
       },
       "tags": {
-        "epo:status": "implemented"
+        "dct:references": "<a href=\"https://example.com/link1\">Link</a>",
+        "epo:status": "implemented",
+        "skos:note": "This class should be used to represent the whole or a part of goods, services, or works intended for procurement. Each instance can be linked to a Purpose or a CPV classification to specify its content, facilitating standardization and clarity in procurement documentation.",
+        "skos:prefLabel": "Procurement object (custom label)"
       },
       "uri": "http://data.europa.eu/a4g/ontology#ProcurementObject",
       "usage": {
