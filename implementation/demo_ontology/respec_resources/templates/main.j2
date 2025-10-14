@@ -66,11 +66,20 @@
     {% endblock %} 
 
     {% block governance %}
-    <section class="informative">
-        <h2>Governance</h2>
-    </section>
+        <section class="informative">
+            <h2>Governance</h2>
+        </section>
     {% endblock %}
 
+    {% block customSection %}
+        <section class="informative">
+            <h2>Custom section - TEMPLATE_CUSTOM_2024</h2>
+            <p>A custom section introduced in main template</p>
+        </section>
+        
+        <!-- Include custom template content -->
+        {% include "custom.j2" ignore missing %}
+    {% endblock %}
 
     {% block quickReference %}
         {{ super() }}
