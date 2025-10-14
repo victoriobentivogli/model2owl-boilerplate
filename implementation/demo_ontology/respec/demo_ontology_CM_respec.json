@@ -868,156 +868,6 @@
     },
     {
       "description": {
-        "en": "External concept defined by <xref scope=\"external\" href=\"\"http://xmlns.com/foaf/spec/#term_Agent\"\"><foreign otherprops=\"#0000ff\"><u>http://xmlns.com/foaf/spec/#term_Agent</u></foreign></xref>"
-      },
-      "label": {
-        "en": "Agent"
-      },
-      "name": "foaf:Agent",
-      "parents": [],
-      "properties": [
-        {
-          "cardinality": "0..*",
-          "description": {
-            "en": "Acronym or alternative name of the Agent."
-          },
-          "domain": [
-            {
-              "name": "foaf:Agent",
-              "uri": "http://xmlns.com/foaf/0.1/Agent"
-            }
-          ],
-          "label": {
-            "en": "Has alias"
-          },
-          "name": "epo:hasAlias",
-          "range": [
-            {
-              "range_curie": "rdf:PlainLiteral",
-              "range_label": {
-                "en": "Plain literal"
-              },
-              "range_puri": "http://www.w3.org/1999/02/22-rdf-syntax-ns#PlainLiteral",
-              "range_uri": "http://www.w3.org/1999/02/22-rdf-syntax-ns#PlainLiteral"
-            }
-          ],
-          "tags": {
-            "epo:status": "implemented",
-            "skos:historyNote": "WG Approval 25/03/2021"
-          },
-          "uri": "http://data.europa.eu/a4g/ontology#hasAlias",
-          "usage": {}
-        },
-        {
-          "cardinality": "0..*",
-          "description": {
-            "en": "Relation to the proof of conformance."
-          },
-          "domain": [
-            {
-              "name": "foaf:Agent",
-              "uri": "http://xmlns.com/foaf/0.1/Agent"
-            }
-          ],
-          "label": {
-            "en": "Has certification"
-          },
-          "name": "epo:hasCertification",
-          "range": [
-            {
-              "range_curie": "epo:Certificate",
-              "range_label": {
-                "en": "Certificate"
-              },
-              "range_puri": "http://data.europa.eu/a4g/ontology#Certificate",
-              "range_uri": "http://data.europa.eu/a4g/ontology#Certificate"
-            }
-          ],
-          "tags": {
-            "epo:status": "implemented",
-            "skos:historyNote": "WG Approval 30/05/2023"
-          },
-          "uri": "http://data.europa.eu/a4g/ontology#hasCertification",
-          "usage": {}
-        },
-        {
-          "cardinality": "0..*",
-          "description": {
-            "en": "External concept defined by <xref scope=\"external\" href=\"\"https://semiceu.github.io/ADMS/releases/2.00/#identifier\"\"><foreign otherprops=\"#0000ff\"><u>https://semiceu.github.io/ADMS/releases/2.00/#identifier</u></foreign></xref>"
-          },
-          "domain": [
-            {
-              "name": "foaf:Agent",
-              "uri": "http://xmlns.com/foaf/0.1/Agent"
-            }
-          ],
-          "label": {
-            "en": "Identifier"
-          },
-          "name": "adms:identifier",
-          "range": [
-            {
-              "range_curie": "adms:Identifier",
-              "range_label": {
-                "en": "Identifier"
-              },
-              "range_puri": "http://www.w3.org/ns/adms#Identifier",
-              "range_uri": "http://www.w3.org/ns/adms#Identifier"
-            }
-          ],
-          "tags": {
-            "epo:status": "implemented"
-          },
-          "uri": "http://www.w3.org/ns/adms#identifier",
-          "usage": {}
-        },
-        {
-          "cardinality": "0..*",
-          "description": {
-            "en": "External concept defined by <xref scope=\"external\" href=\"\"https://www.dublincore.org/specifications/dublin-core/dcmi-terms/#http://purl.org/dc/terms/title\"\"><foreign otherprops=\"#0000ff\"><u>https://www.dublincore.org/specifications/dublin-core/dcmi-terms/#http://purl.org/dc/terms/title</u></foreign></xref>"
-          },
-          "domain": [
-            {
-              "name": "foaf:Agent",
-              "uri": "http://xmlns.com/foaf/0.1/Agent"
-            }
-          ],
-          "label": {
-            "en": "Title"
-          },
-          "name": "dct:title",
-          "range": [
-            {
-              "range_curie": "rdf:PlainLiteral",
-              "range_label": {
-                "en": "Plain literal"
-              },
-              "range_puri": "http://www.w3.org/1999/02/22-rdf-syntax-ns#PlainLiteral",
-              "range_uri": "http://www.w3.org/1999/02/22-rdf-syntax-ns#PlainLiteral"
-            }
-          ],
-          "tags": {
-            "epo:status": "implemented",
-            "skos:historyNote": "WG approval 30/05/2023"
-          },
-          "uri": "http://purl.org/dc/terms/title",
-          "usage": {}
-        }
-      ],
-      "rawTags": {
-        "class-usage-scope": "supportive"
-      },
-      "tags": {
-        "epo:status": "implemented",
-        "skos:historyNote": "WG Approval 28/04/2020"
-      },
-      "uri": "http://xmlns.com/foaf/0.1/Agent",
-      "usage": {
-        "en": "External concept defined by <xref scope=\"external\" href=\"\"http://xmlns.com/foaf/spec/#term_Agent\"\"><foreign otherprops=\"#0000ff\"><u>http://xmlns.com/foaf/spec/#term_Agent</u></foreign></xref>"
-      }
-    },
-    {
-      "description": {
         "en": "Relative concept that ties an Agent to a part they play in a given Situational Context.Additional information:The classification of roles is based is based on the degree of involvement into the Procurement Process: - Primary (Procurement) Pole is directly involved in the Procurement Process;- Secondary (Procurement sub-) Role is secondary to the Procurement Process- Tertiary (Related) Role is not involved in the Procurement Process."
       },
       "label": {
@@ -4552,7 +4402,9 @@
             }
           ],
           "tags": {
-            "epo:status": "implemented"
+            "cfg:usage": "Recommended",
+            "epo:status": "implemented",
+            "skos:note": "Indicates the specific lot or batch that an entity refers to, and provide additional context using external references when relevant, for example: <a href=\"https://example.com/lot123\">Lot 123 details</a> or <a href=\"https://example.com/lot456\">Lot 456 overview</a>\n"
           },
           "uri": "http://data.europa.eu/a4g/ontology#concernsLot",
           "usage": {}
@@ -10146,7 +9998,7 @@
       "parents": [
         {
           "label": {
-            "en": "Procurement object"
+            "en": "Procurement object (custom label)"
           },
           "name": "epo:ProcurementObject",
           "scoped_uri": "http://data.europa.eu/a4g/ontology#ProcurementObject"
@@ -12860,7 +12712,7 @@
       "parents": [
         {
           "label": {
-            "en": "Agent"
+            "en": "Pref label for agent"
           },
           "name": "foaf:Agent",
           "scoped_uri": "http://xmlns.com/foaf/0.1/Agent"
@@ -13922,7 +13774,7 @@
       "parents": [
         {
           "label": {
-            "en": "Agent"
+            "en": "Pref label for agent"
           },
           "name": "foaf:Agent",
           "scoped_uri": "http://xmlns.com/foaf/0.1/Agent"
@@ -14469,6 +14321,157 @@
     },
     {
       "description": {
+        "en": "External concept defined by <xref scope=\"external\" href=\"\"http://xmlns.com/foaf/spec/#term_Agent\"\"><foreign otherprops=\"#0000ff\"><u>http://xmlns.com/foaf/spec/#term_Agent</u></foreign></xref>"
+      },
+      "label": {
+        "en": "Pref label for agent"
+      },
+      "name": "foaf:Agent",
+      "parents": [],
+      "properties": [
+        {
+          "cardinality": "0..*",
+          "description": {
+            "en": "Acronym or alternative name of the Agent."
+          },
+          "domain": [
+            {
+              "name": "foaf:Agent",
+              "uri": "http://xmlns.com/foaf/0.1/Agent"
+            }
+          ],
+          "label": {
+            "en": "Has alias"
+          },
+          "name": "epo:hasAlias",
+          "range": [
+            {
+              "range_curie": "rdf:PlainLiteral",
+              "range_label": {
+                "en": "Plain literal"
+              },
+              "range_puri": "http://www.w3.org/1999/02/22-rdf-syntax-ns#PlainLiteral",
+              "range_uri": "http://www.w3.org/1999/02/22-rdf-syntax-ns#PlainLiteral"
+            }
+          ],
+          "tags": {
+            "epo:status": "implemented",
+            "skos:historyNote": "WG Approval 25/03/2021"
+          },
+          "uri": "http://data.europa.eu/a4g/ontology#hasAlias",
+          "usage": {}
+        },
+        {
+          "cardinality": "0..*",
+          "description": {
+            "en": "Relation to the proof of conformance."
+          },
+          "domain": [
+            {
+              "name": "foaf:Agent",
+              "uri": "http://xmlns.com/foaf/0.1/Agent"
+            }
+          ],
+          "label": {
+            "en": "Has certification"
+          },
+          "name": "epo:hasCertification",
+          "range": [
+            {
+              "range_curie": "epo:Certificate",
+              "range_label": {
+                "en": "Certificate"
+              },
+              "range_puri": "http://data.europa.eu/a4g/ontology#Certificate",
+              "range_uri": "http://data.europa.eu/a4g/ontology#Certificate"
+            }
+          ],
+          "tags": {
+            "epo:status": "implemented",
+            "skos:historyNote": "WG Approval 30/05/2023"
+          },
+          "uri": "http://data.europa.eu/a4g/ontology#hasCertification",
+          "usage": {}
+        },
+        {
+          "cardinality": "0..*",
+          "description": {
+            "en": "External concept defined by <xref scope=\"external\" href=\"\"https://semiceu.github.io/ADMS/releases/2.00/#identifier\"\"><foreign otherprops=\"#0000ff\"><u>https://semiceu.github.io/ADMS/releases/2.00/#identifier</u></foreign></xref>"
+          },
+          "domain": [
+            {
+              "name": "foaf:Agent",
+              "uri": "http://xmlns.com/foaf/0.1/Agent"
+            }
+          ],
+          "label": {
+            "en": "Identifier"
+          },
+          "name": "adms:identifier",
+          "range": [
+            {
+              "range_curie": "adms:Identifier",
+              "range_label": {
+                "en": "Identifier"
+              },
+              "range_puri": "http://www.w3.org/ns/adms#Identifier",
+              "range_uri": "http://www.w3.org/ns/adms#Identifier"
+            }
+          ],
+          "tags": {
+            "epo:status": "implemented"
+          },
+          "uri": "http://www.w3.org/ns/adms#identifier",
+          "usage": {}
+        },
+        {
+          "cardinality": "0..*",
+          "description": {
+            "en": "External concept defined by <xref scope=\"external\" href=\"\"https://www.dublincore.org/specifications/dublin-core/dcmi-terms/#http://purl.org/dc/terms/title\"\"><foreign otherprops=\"#0000ff\"><u>https://www.dublincore.org/specifications/dublin-core/dcmi-terms/#http://purl.org/dc/terms/title</u></foreign></xref>"
+          },
+          "domain": [
+            {
+              "name": "foaf:Agent",
+              "uri": "http://xmlns.com/foaf/0.1/Agent"
+            }
+          ],
+          "label": {
+            "en": "Title"
+          },
+          "name": "dct:title",
+          "range": [
+            {
+              "range_curie": "rdf:PlainLiteral",
+              "range_label": {
+                "en": "Plain literal"
+              },
+              "range_puri": "http://www.w3.org/1999/02/22-rdf-syntax-ns#PlainLiteral",
+              "range_uri": "http://www.w3.org/1999/02/22-rdf-syntax-ns#PlainLiteral"
+            }
+          ],
+          "tags": {
+            "epo:status": "implemented",
+            "skos:historyNote": "WG approval 30/05/2023"
+          },
+          "uri": "http://purl.org/dc/terms/title",
+          "usage": {}
+        }
+      ],
+      "rawTags": {
+        "class-usage-scope": "supportive"
+      },
+      "tags": {
+        "epo:status": "implemented",
+        "skos:historyNote": "WG Approval 28/04/2020",
+        "skos:prefLabel": "Pref label for agent"
+      },
+      "uri": "http://xmlns.com/foaf/0.1/Agent",
+      "usage": {
+        "en": "External concept defined by <xref scope=\"external\" href=\"\"http://xmlns.com/foaf/spec/#term_Agent\"\"><foreign otherprops=\"#0000ff\"><u>http://xmlns.com/foaf/spec/#term_Agent</u></foreign></xref>"
+      }
+    },
+    {
+      "description": {
         "en": "A reward given in a Contest."
       },
       "label": {
@@ -14566,7 +14569,7 @@
       "parents": [
         {
           "label": {
-            "en": "Procurement object"
+            "en": "Procurement object (custom label)"
           },
           "name": "epo:ProcurementObject",
           "scoped_uri": "http://data.europa.eu/a4g/ontology#ProcurementObject"
@@ -16353,7 +16356,7 @@
         "en": "The whole or a division of goods, services or works to be procured.Additional Information:Anything that can specify the procurement content (i.e. goods, services, work) is a Procurement Object. In a sense, such an \"object\" can constitute the \"object of a Contract\".To test whether something is a Procedure Object check if it can have a Purpose and/or CPV classification (<i>The CPV establishes a single classification system for public procurement aimed at standardising the references used by Contracting Authorities and entities to describe the subject of Procurement Contracts.</i>).Note:Procedure, seems to be an exception from this rule. Because it is a conflated term: it carries process properties and \"purpose\" properties."
       },
       "label": {
-        "en": "Procurement object"
+        "en": "Procurement object (custom label)"
       },
       "name": "epo:ProcurementObject",
       "parents": [
@@ -16492,9 +16495,12 @@
             }
           ],
           "tags": {
+            "cfg:usage": "Recommended",
+            "dct:references": "<a href=\"https://example.com/link1\">Link 1</a>",
             "epo:status": "implemented",
             "skos:editorialNote": "Used by eForms BT-95",
-            "skos:historyNote": "WG Approval 16/01/2019"
+            "skos:historyNote": "WG Approval 16/01/2019",
+            "skos:note": "Provides a concise, human-readable description of the legal basis (statute, regulation, or contractual provision) that justifies an entity's obligations or permissions, and include a reference identifier."
           },
           "uri": "http://data.europa.eu/a4g/ontology#hasRecurrenceDescription",
           "usage": {}
@@ -16557,6 +16563,7 @@
             }
           ],
           "tags": {
+            "dct:references": "<a href=\"https://example.com/link1\">Link 1</a>, <a href=\"https://example.com/link2\">Link 2</a>",
             "epo:status": "implemented",
             "skos:editorialNote": "Used by eForms BT-94",
             "skos:historyNote": "WG Approval 12/05/2020"
@@ -16631,7 +16638,10 @@
         "class-usage-scope": "main"
       },
       "tags": {
-        "epo:status": "implemented"
+        "dct:references": "<a href=\"https://example.com/link1\">Link</a>",
+        "epo:status": "implemented",
+        "skos:note": "This class should be used to represent the whole or a part of goods, services, or works intended for procurement. Each instance can be linked to a Purpose or a CPV classification to specify its content, facilitating standardization and clarity in procurement documentation.",
+        "skos:prefLabel": "Procurement object (custom label)"
       },
       "uri": "http://data.europa.eu/a4g/ontology#ProcurementObject",
       "usage": {
@@ -22010,7 +22020,7 @@
       "parents": [
         {
           "label": {
-            "en": "Agent"
+            "en": "Pref label for agent"
           },
           "name": "foaf:Agent",
           "scoped_uri": "http://xmlns.com/foaf/0.1/Agent"
