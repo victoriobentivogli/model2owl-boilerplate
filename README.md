@@ -314,7 +314,7 @@ The foundation template that provides:
 - Standard macros and functions
 
 > **Note:** The `base.j2` template is provided by Model2OWL and contains the core functionality. 
-> For detailed information about available variables and macros, see the [Model2OWL ReSpec Documentation](https://docs.ted.europa.eu/M2O/latest/user-guide/respec-documentation.html).
+> For detailed information about available variables and macros, see the [Model2OWL ReSpec Documentation](https://docs.ted.europa.eu/M2O/latest/user-guide/respec-documentation.html) and the [Model2OWL README](https://github.com/OP-TED/model2owl/blob/develop/README.md).
 
 #### Main Template (`main.j2`)
 Your customizable template that **extends** `base.j2`:
