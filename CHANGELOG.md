@@ -3,7 +3,7 @@
 All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-## [Unreleased]
+## [3.1.0] - 2025-10-15
 ### Added
 - Generation of the new ReSpec documentation artefact (available through the new
   `generate_jsonld_context` CI job) (TEDM2O-11).
