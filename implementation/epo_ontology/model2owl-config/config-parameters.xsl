@@ -90,9 +90,12 @@
     <!--    This section contains the variables used to build the ontology metadata-->
     <xsl:variable name="moduleReference" select="'core'"/>
     
+    
+    
     <!-- JSON metadata configuration -->
     <xsl:variable name="metadataJson" select="fn:json-doc('metadata.json')"/>
     <!-- suffix for URIs of sh:NodeShape instances in the SHACL artefact -->
+    
     <xsl:variable name="nodeShapeURIsuffix" select="'Shape'"/>
     <!-- The variable controls the generation of reused concepts within artifacts.
     -->
