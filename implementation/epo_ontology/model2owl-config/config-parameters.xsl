@@ -73,8 +73,18 @@
     <!--    This variable controls whether the enumerations are transformed into skos schemes or ignored-->
     <xsl:variable name="enableGenerationOfConceptSchemes" select="fn:false()"/>
 
+    <!--    Property used for constraint level for enumerations-->
+    <xsl:variable name="cvConstraintLevelProperty" select="'epo:constraintLevel'"/>
+
     <!--Allowed characters for a normalized string-->
     <xsl:variable name="allowedStrings" select="'^[\w\d-_:]+$'"/>
+
+    <!--    Generate reused classes, attributes and connectors. Concepts with
+    these prefixes will be included in the generated artefacts. -->
+    <xsl:variable name="includedPrefixesList" select="('epo', 'epo-not',
+        'epo-ord', 'epo-cat', 'epo-con',
+        'epo-ful','epo-eva','epo-awa','epo-qua','epo-req', 'epo-sub', 'epo-acc',
+        'epo-inv', 'epo-pay')"/>
 
     <!--    Generate reused classes, attributes and connectors-->
     <xsl:variable name="generateReusedConcepts" select="fn:true()"/>
@@ -99,12 +109,34 @@
     <xsl:variable name="nodeShapeURIsuffix" select="'Shape'"/>
     <!-- The variable controls the generation of reused concepts within artifacts.
     -->
+    
+    <!-- This set of variables controls the generation of reused concepts within
+    artifacts. -->
+    <xsl:variable name="generateReusedConceptsSHACL" select="fn:true()"/>
+    <xsl:variable name="generateReusedConceptsOWLcore" select="fn:true()"/>
+    <xsl:variable name="generateReusedConceptsOWLrestrictions" select="fn:true()"/>
+    <xsl:variable name="generateReusedConceptsGlossary" select="fn:true()"/>
     <xsl:variable name="generateReusedConceptsJSONLDcontext" select="fn:true()"/>
-    <!-- Tag name/key that is used to describe a usage note of a class or
-         property-->
+
+    <!--    This set of variables controls generation of comments and how they
+    will generate in the output -->
+    <xsl:variable name="commentsGeneration" select="fn:true()"/>
+    <xsl:variable name="commentProperty" select="'skos:editorialNote'"/>
+
+     <!--    Tag names/keys that are excluded from output -->
+    <xsl:variable name="excludedTagNamesList" select="($statusProperty,
+        $cvConstraintLevelProperty)"/>
+
+    <!-- Tag name/key that is used to describe a usage note of a class or property-->
     <xsl:variable name="usageNoteTagName" select="'skos:note'"/>
-    <!-- Tag name/key that is used to provide reference links/reuse information for
-         a class or property-->
+
+    <!-- Tag name/key that is used to indicate if a property is mandatory or
+         optional. If the tag is missing then cardinality will be used to
+         determine if a property is mandatory or optional-->
+    <xsl:variable name="mandatoryStatusTagName" select="'cfg:usage'"/>
+
+    <!-- Tag name/key that is used to provide reference links/reuse information
+    for a class or property-->
     <xsl:variable name="referenceTagName" select="'dct:references'"/>
     <!-- Label that will be used in the ReSpec docs to describe values of
          `referenceTagName` for properties -->
@@ -119,4 +151,30 @@
          documentation-->
     <xsl:variable name="customTermLabelTagName" select="'skos:prefLabel'"/>
     
+    <!-- Variables for status filtering:
+     - The property used to indicate the status
+     - A list of valid statuses
+     - A list of statuses to be excluded from the output
+     - The default status value interpretation for elements without a status set -->
+    <xsl:variable name="statusProperty" select="'epo:status'"/>
+    <xsl:variable name="validStatusesList" select="('proposed', 'approved', 'implemented')"/>
+    <xsl:variable name="excludedElementStatusesList" select="('proposed', 'approved')"/>
+    <xsl:variable name="unspecifiedStatusInterpretation" select="'implemented'"/>
+
+    <!-- URIs list of UML versions supported by model2owl -->
+    <xsl:variable name="supportedUmlVersions"
+        select="('http://www.omg.org/spec/UML/20131001',
+            'https://www.omg.org/spec/UML/20131001',
+            'http://www.omg.org/spec/UML/20161101',
+            'https://www.omg.org/spec/UML/20161101'
+        )"/>
+
+    <!-- If enabled then any occurence of rdf:PlainLiteral datatype will be
+    replaced in a SHACL shape. A list of the two string datatypes will be used
+    instead: (xsd:string, rdf:langString). -->
+    <xsl:variable name="translatePlainLiteralToStringTypesInSHACL" select="fn:true()"/>
+
+    <!-- If true, this option will annotate all SHACL concepts in the shapes
+    artefact with the ontology IRI defined therein, using rdfs:isDefinedBy. -->
+    <xsl:variable name="annotateShaclConceptsWithOntology" select="fn:true()"/>
 </xsl:stylesheet>
