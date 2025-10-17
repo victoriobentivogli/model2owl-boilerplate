@@ -320,7 +320,6 @@ The foundation template that provides:
 Your customizable template that **extends** `base.j2`:
 
 ```jinja2
-{% extends "base.j2" %}
 
 {% block content %}
 <section id="introduction">
